@@ -38,7 +38,12 @@ internal sealed class CreateQuestionSetCommandHandler(IQuestionSetRepository rep
     {
         return [.. commands.Select(cmd =>
         {
-            return Core.QuestionAggregate.Question.Create(cmd.Question, cmd.Details, cmd.Mark).Value!;
+            var question = Core.QuestionAggregate.Question.Create(cmd.Question, cmd.Details, cmd.Mark).Value!;
+            foreach (var option in cmd.QuestionOptions)
+            {
+                question.AddQuestionOptions(option.OptionText, option.IsAnswer);
+            };
+            return question;
         })];
     }
 }

@@ -100,12 +100,6 @@ public sealed class TagEndpointTest : QuizzerBaseFunctionTest, IDisposable
         getDeletedTagResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
-    private void AddTokenToEachRequest()
-    {
-        HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer",
-                    LoggedInUserDictionary.FirstOrDefault(x => x.Key == UserEmailDataCollection.Test1Email).Value);
-    }
-
     public void Dispose()
     {
         HttpClient.DefaultRequestHeaders.Authorization = null;

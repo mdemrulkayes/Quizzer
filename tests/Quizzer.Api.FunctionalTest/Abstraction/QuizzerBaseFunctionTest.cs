@@ -1,14 +1,16 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Bogus;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
-using Modules.Identity.Entities;
-using Modules.Identity.Features.Registration.Enums;
-using Modules.Identity.Features.Registration;
 using Modules.Identity.Constants;
-using System.Net.Http.Json;
-using Bogus;
+using Modules.Identity.Entities;
 using Modules.Identity.Features.Login;
-using Shared.Core;
+using Modules.Identity.Features.Registration;
+using Modules.Identity.Features.Registration.Enums;
 using Modules.Quiz.Infrastructure.Data;
+using Quizzer.Api.FunctionalTest.DataCollection;
+using Shared.Core;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
 
 namespace Quizzer.Api.FunctionalTest.Abstraction;
 public class QuizzerBaseFunctionTest
@@ -72,5 +74,11 @@ public class QuizzerBaseFunctionTest
         _scope.Dispose();
         HttpClient.Dispose();
         UserManager.Dispose();
+    }
+
+    internal void AddTokenToEachRequest()
+    {
+        HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer",
+                    LoggedInUserDictionary.FirstOrDefault(x => x.Key == UserEmailDataCollection.Test1Email).Value);
     }
 }

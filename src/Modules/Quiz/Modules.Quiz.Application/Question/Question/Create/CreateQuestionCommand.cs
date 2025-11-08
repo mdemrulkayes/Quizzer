@@ -4,4 +4,4 @@ using Shared.Core;
 
 namespace Modules.Quiz.Application.Question.Question.Create;
 
-public sealed record CreateQuestionCommand(string Question, string Details, int? Mark, List<QuestionOption> QuestionOptions) : ICommand<Result<QuestionResponse>>;
+public sealed record CreateQuestionCommand(string Question, string Details, int? Mark, List<CreateQuestionOptionCommand> QuestionOptions) : ICommand<Result<QuestionResponse>>;
