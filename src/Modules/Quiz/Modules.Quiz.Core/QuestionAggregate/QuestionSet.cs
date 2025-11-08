@@ -2,6 +2,7 @@
 using Shared.Core;
 
 namespace Modules.Quiz.Core.QuestionAggregate;
+
 public sealed class QuestionSet : BaseAuditableEntity, IAggregateRoot
 {
     public long QuestionSetId { get; private set; }
@@ -38,16 +39,24 @@ public sealed class QuestionSet : BaseAuditableEntity, IAggregateRoot
         return this;
     }
 
-    public void AddQuestion(string askedQuestion, Dictionary<string, bool> options,string discussion = "", int? mark = null)
+    public void AddQuestions(List<Question> questions)
+    {
+        foreach (var question in questions)
+        {
+            AddQuestion(question.AskedQuestion, [.. question.Options], question.Discussion, question.QuestionMark);
+        }
+    }
+
+    private void AddQuestion(string askedQuestion, List<QuestionOption> questionOptions, string discussion = "", int? mark = null)
     {
         var addedQuestion = Question.Create(askedQuestion, discussion, mark);
 
         if (addedQuestion.Value == null) return;
 
         var question = addedQuestion.Value;
-        foreach (var option in options)
+        foreach (var option in questionOptions)
         {
-            question.AddQuestionOptions(option.Key, option.Value);
+            question.AddQuestionOptions(option.OptionText, option.IsAnswer);
         }
         _questions.Add(question);
     }

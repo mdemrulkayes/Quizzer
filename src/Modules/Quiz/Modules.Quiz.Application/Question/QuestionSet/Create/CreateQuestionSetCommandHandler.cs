@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Modules.Quiz.Application.Question.Question.Create;
 using Modules.Quiz.Application.Question.QuestionSet.Dtos;
 using Modules.Quiz.Core.QuestionAggregate;
 using Shared.Core;
@@ -20,10 +21,24 @@ internal sealed class CreateQuestionSetCommandHandler(IQuestionSetRepository rep
         }
 
         var set = questionSet.Value;
+        set.AddQuestions(MapQuestionCommandsToQuestions(command.Questions));
 
         repository.Add(set);
         await unitOfWork.CommitAsync(cancellationToken);
 
         return mapper.Map<Core.QuestionAggregate.QuestionSet, QuestionSetResponse>(set);
+    }
+
+    /// <summary>
+    /// Map Question command to questions
+    /// </summary>
+    /// <param name="commands"></param>
+    /// <returns></returns>
+    private List<Core.QuestionAggregate.Question> MapQuestionCommandsToQuestions(List<CreateQuestionCommand> commands)
+    {
+        return [.. commands.Select(cmd =>
+        {
+            return Core.QuestionAggregate.Question.Create(cmd.Question, cmd.Details, cmd.Mark).Value!;
+        })];
     }
 }

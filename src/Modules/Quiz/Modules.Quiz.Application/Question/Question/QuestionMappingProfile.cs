@@ -11,7 +11,12 @@ internal sealed class QuestionMappingProfile : Profile
                 set.QuestionId,
                 set.AskedQuestion,
                 set.Discussion,
-                set.QuestionMark
+                set.QuestionMark,
+                set.Options.Select(option => new QuestionOptionResponse(
+                    option.QuestionOptionId,
+                    option.OptionText,
+                    option.IsAnswer
+                )).ToList()
             ))
             .ReverseMap();
     }

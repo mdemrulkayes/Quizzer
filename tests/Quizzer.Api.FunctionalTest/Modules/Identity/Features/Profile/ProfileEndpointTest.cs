@@ -5,6 +5,7 @@ using FluentAssertions;
 using Modules.Identity.Constants;
 using Modules.Identity.Features.Profile;
 using Quizzer.Api.FunctionalTest.Abstraction;
+using Quizzer.Api.FunctionalTest.DataCollection;
 
 namespace Quizzer.Api.FunctionalTest.Modules.Identity.Features.Profile;
 

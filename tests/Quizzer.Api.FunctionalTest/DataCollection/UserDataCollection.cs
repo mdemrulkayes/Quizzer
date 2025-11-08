@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace Quizzer.Api.FunctionalTest.Abstraction;
+namespace Quizzer.Api.FunctionalTest.DataCollection;
 internal class UserDataCollection : IEnumerable<object[]>
 {
 
@@ -17,7 +17,7 @@ internal class UserDataCollection : IEnumerable<object[]>
 
 internal class UserEmailDataCollection : IEnumerable<object[]>
 {
-
+    public const string Test1Email = "test1@gmail.com";
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
 

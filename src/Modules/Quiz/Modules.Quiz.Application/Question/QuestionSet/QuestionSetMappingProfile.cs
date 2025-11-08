@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using Modules.Quiz.Application.Question.Question.Dtos;
 using Modules.Quiz.Application.Question.QuestionSet.Dtos;
 
 namespace Modules.Quiz.Application.Question.QuestionSet;
+
 internal sealed class QuestionSetMappingProfile : Profile
 {
     public QuestionSetMappingProfile()
@@ -11,7 +13,18 @@ internal sealed class QuestionSetMappingProfile : Profile
                 set.QuestionSetId,
                 set.Name,
                 set.SetCode,
-                set.Details
+                set.Details,
+                set.Questions.Select(q => new QuestionResponse(
+                    q.QuestionId,
+                    q.AskedQuestion,
+                    q.Discussion,
+                    q.QuestionMark,
+                    q.Options.Select(o => new QuestionOptionResponse(
+                        o.QuestionOptionId,
+                        o.OptionText,
+                        o.IsAnswer
+                    )).ToList()
+                )).ToList()
             ))
             .ReverseMap();
     }

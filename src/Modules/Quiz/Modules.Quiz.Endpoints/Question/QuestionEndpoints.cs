@@ -4,10 +4,10 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Modules.Quiz.Application.Question.Question.Create;
+using Modules.Quiz.Application.Question.Question.Delete;
 using Modules.Quiz.Application.Question.Question.Dtos;
 using Modules.Quiz.Application.Question.Question.Query;
 using Modules.Quiz.Application.Question.Question.Update;
-using Modules.Quiz.Application.Question.QuestionSet.Delete;
 using Modules.Quiz.Core;
 using Shared.Application;
 using Shared.Core;
@@ -42,7 +42,7 @@ internal class QuestionEndpoints : IBaseEndpoint
             .WithTags(QuestionModuleConstants.RouteTag.QuestionTag)
             .RequireAuthorization();
 
-        routeBuilder.MapDelete(QuestionModuleConstants.Route.QuestionRoute.DeleteQuestion, DeleteQuestionSet)
+        routeBuilder.MapDelete(QuestionModuleConstants.Route.QuestionRoute.DeleteQuestion, DeleteQuestion)
             .Produces((int)HttpStatusCode.OK, typeof(bool))
             .ProducesValidationProblem()
             .WithTags(QuestionModuleConstants.RouteTag.QuestionTag)
@@ -78,9 +78,9 @@ internal class QuestionEndpoints : IBaseEndpoint
         return set.ConvertToResult();
     }
 
-    private static async Task<IResult> DeleteQuestionSet(ISender sender, long setId)
+    private static async Task<IResult> DeleteQuestion(ISender sender, long questionId)
     {
-        var deleteSet = await sender.Send(new DeleteQuestionSetCommand(setId));
+        var deleteSet = await sender.Send(new DeleteQuestionCommand(questionId));
 
         return deleteSet.ConvertToResult();
     }
