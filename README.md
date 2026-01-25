@@ -3,10 +3,3 @@
 
 [![Build and Test](https://github.com/mdemrulkayes/Quizzer/actions/workflows/dotnet.yml/badge.svg)](https://github.com/mdemrulkayes/Quizzer/actions/workflows/dotnet.yml)
 [![CodeQL](https://github.com/mdemrulkayes/Quizzer/actions/workflows/codeql.yml/badge.svg)](https://github.com/mdemrulkayes/Quizzer/actions/workflows/codeql.yml)
-
-## Below are steps to improve the project
-- [x] Migrate from .NET Core 2.2 to .NET Core 8
-- [x] Update all dependencies
-- [ ] Migrate to the Clean Architecture setup
-- [ ] Add docker support
-- [ ] Success build and deploy into azure
