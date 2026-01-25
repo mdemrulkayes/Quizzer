@@ -101,7 +101,7 @@ public class UserRegistrationEndpointTests(QuizzerWebApiFactory factory) : Quizz
         var userDetails = await UserManager.FindByEmailAsync(registerUserCommand.Email);
         userDetails.Should().NotBeNull();
 
-        userDetails?.CreatedDate.Date.Should().Be(DateTime.Today);
+        userDetails?.CreatedDate.Date.Should().Be(DateTime.UtcNow.Date);
     }
 
     #region Private methods

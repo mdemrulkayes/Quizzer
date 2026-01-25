@@ -58,15 +58,16 @@ try
     builder.Services.AddMediatRRequestLoggingBehaviour();
     builder.Services.AddMediatRFluentValidationBehaviour(mediatRAssemblies);
 
-    builder.Services.RegisterJwtSwagger();
+    // Register OpenAPI documentation with Scalar UI
+    builder.Services.AddOpenApiDocumentation();
 
     var app = builder.Build();
 
     // Configure the HTTP request pipeline.
     if (app.Environment.IsDevelopment())
     {
-        app.UseSwagger();
-        app.UseSwaggerUI();
+        // Map OpenAPI and Scalar API Reference
+        app.MapOpenApiDocumentation();
         app.UseDeveloperExceptionPage();
     }
 

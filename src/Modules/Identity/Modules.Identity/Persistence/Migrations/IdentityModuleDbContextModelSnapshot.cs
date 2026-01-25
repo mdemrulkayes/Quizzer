@@ -18,7 +18,7 @@ namespace Modules.Identity.Persistence.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("Identity")
-                .HasAnnotation("ProductVersion", "8.0.10")
+                .HasAnnotation("ProductVersion", "10.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -46,24 +46,28 @@ namespace Modules.Identity.Persistence.Migrations
                         new
                         {
                             Id = new Guid("ac3c30c4-fcbd-4e5a-ab8b-8f6179a65120"),
+                            ConcurrencyStamp = "STATIC-ADMIN-STAMP",
                             Name = "SuperAdmin",
                             NormalizedName = "SuperAdmin"
                         },
                         new
                         {
                             Id = new Guid("3123befc-4fd0-4493-b28e-46c1ed881ca4"),
+                            ConcurrencyStamp = "STATIC-ADMIN-STAMP",
                             Name = "SupportAdmin",
                             NormalizedName = "SupportAdmin"
                         },
                         new
                         {
                             Id = new Guid("f0cc1d90-471c-4563-b20a-12acdb47735b"),
+                            ConcurrencyStamp = "STATIC-ADMIN-STAMP",
                             Name = "QuizAuthor",
                             NormalizedName = "QuizAuthor"
                         },
                         new
                         {
                             Id = new Guid("9d476df0-1663-43af-b06b-af945b07db45"),
+                            ConcurrencyStamp = "STATIC-ADMIN-STAMP",
                             Name = "Examine",
                             NormalizedName = "Examine"
                         });
