@@ -17,25 +17,29 @@ internal sealed class RoleConfiguration : IEntityTypeConfiguration<IdentityRole<
             {
                 Id = Guid.Parse(IdentityModuleConstants.Role.SuperAdminRoleGuid),
                 Name = RoleConstants.SuperAdmin,
-                NormalizedName = RoleConstants.SuperAdmin
+                NormalizedName = RoleConstants.SuperAdmin,
+                ConcurrencyStamp = "STATIC-ADMIN-STAMP"
             },
             new()
             {
                 Id = Guid.Parse(IdentityModuleConstants.Role.SupportAdminRoleGuid),
                 Name = RoleConstants.SupportAdmin,
-                NormalizedName = RoleConstants.SupportAdmin
+                NormalizedName = RoleConstants.SupportAdmin,
+                ConcurrencyStamp = "STATIC-ADMIN-STAMP"
             },
             new()
             {
                 Id = Guid.Parse(IdentityModuleConstants.Role.QuizAuthorRoleGuid),
                 Name = RoleConstants.QuizAuthor,
-                NormalizedName = RoleConstants.QuizAuthor
+                NormalizedName = RoleConstants.QuizAuthor,
+                ConcurrencyStamp = "STATIC-ADMIN-STAMP"
             },
             new()
             {
                 Id = Guid.Parse(IdentityModuleConstants.Role.ExamineRoleGuid),
                 Name = RoleConstants.Examine,
-                NormalizedName = RoleConstants.Examine
+                NormalizedName = RoleConstants.Examine,
+                ConcurrencyStamp = "STATIC-ADMIN-STAMP"
             }
         });
     }

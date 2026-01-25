@@ -17,6 +17,8 @@ public class IdentityModuleDbContext(DbContextOptions<IdentityModuleDbContext> o
     protected override void OnModelCreating(ModelBuilder builder)
     {
         builder.HasDefaultSchema(IdentityModuleConstants.SchemaName);
+        builder.Ignore<IdentityPasskeyData>();
+        builder.Ignore<IdentityUserPasskey<Guid>>();
         builder.ApplyConfigurationsFromAssembly(typeof(IdentityModuleDbContext).Assembly);
     }
 }

@@ -18,6 +18,7 @@ using Modules.Identity.Models;
 using Shared.Infrastructure.Interceptors;
 
 namespace Modules.Identity;
+
 public static class ServiceCollectionExtensions
 {
     public static IServiceCollection RegisterIdentityModule(this IServiceCollection services,
@@ -35,7 +36,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ILoginService, LoginService>();
         services.Configure<JwtConfiguration>(configuration.GetSection(nameof(JwtConfiguration)));
         services.Configure<DefaultUser>(configuration.GetSection(nameof(DefaultUser)));
-       
+
         logger.Information("{Module} registered successfully", "Identity");
 
         return services;
@@ -104,7 +105,11 @@ public static class ServiceCollectionExtensions
 
         services.AddAuthorization();
 
-        services.AddIdentityCore<ApplicationUser>()
+        services.AddIdentityCore<ApplicationUser>(
+            opt =>
+            {
+                opt.Stores.SchemaVersion = IdentitySchemaVersions.Version3;
+            })
             .AddRoles<IdentityRole<Guid>>()
             .AddRoleManager<RoleManager<IdentityRole<Guid>>>()
             .AddSignInManager<SignInManager<ApplicationUser>>()
