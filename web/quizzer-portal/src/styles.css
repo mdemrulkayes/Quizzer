@@ -1,5 +1,5 @@
-@use "primeicons/primeicons.css";
 @import "tailwindcss";
+@import "primeicons/primeicons.css";
 
 /* Global styles */
 html, body {
