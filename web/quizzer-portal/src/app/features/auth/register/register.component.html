@@ -1,0 +1,49 @@
+<p-card>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="flex flex-col gap-6">
+      <div class="grid grid-cols-2 gap-4 max-sm:grid-cols-1">
+        <p-floatlabel variant="on">
+          <input pInputText id="firstName" formControlName="firstName" class="w-full" />
+          <label for="firstName">First Name</label>
+        </p-floatlabel>
+        <p-floatlabel variant="on">
+          <input pInputText id="lastName" formControlName="lastName" class="w-full" />
+          <label for="lastName">Last Name</label>
+        </p-floatlabel>
+      </div>
+      <p-floatlabel variant="on">
+        <input pInputText id="email" formControlName="email" class="w-full" />
+        <label for="email">Email</label>
+      </p-floatlabel>
+      <p-floatlabel variant="on">
+        <input pInputText id="phoneNumber" formControlName="phoneNumber" class="w-full" />
+        <label for="phoneNumber">Phone Number</label>
+      </p-floatlabel>
+      <p-floatlabel variant="on">
+        <p-password id="password" formControlName="password" [toggleMask]="true" styleClass="w-full" inputStyleClass="w-full" />
+        <label for="password">Password</label>
+      </p-floatlabel>
+      <p-floatlabel variant="on">
+        <p-password id="confirmPassword" formControlName="confirmPassword" [feedback]="false" [toggleMask]="true" styleClass="w-full" inputStyleClass="w-full" />
+        <label for="confirmPassword">Confirm Password</label>
+      </p-floatlabel>
+      @if (form.hasError('passwordMismatch')) {
+        <small class="p-error">Passwords do not match.</small>
+      }
+      @if (errorMessage()) {
+        <small class="p-error">{{ errorMessage() }}</small>
+      }
+      <p-button
+        type="submit"
+        label="Create Account"
+        icon="pi pi-user-plus"
+        [loading]="loading()"
+        [disabled]="form.invalid"
+        styleClass="w-full"
+      />
+    </div>
+    <div class="text-center mt-6 text-sm">
+      <span>Already have an account? <a routerLink="/auth/login" class="text-[var(--p-primary-color)] no-underline font-semibold">Sign In</a></span>
+    </div>
+  </form>
+</p-card>

@@ -45,10 +45,11 @@ public static class ServiceCollectionExtensions
     private static void RegisterRepositories(IServiceCollection services)
     {
         services.AddScoped(typeof(IRepository<>), typeof(BaseRepository<>));
-        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddKeyedScoped<IUnitOfWork, UnitOfWork>(ModuleKeys.Quiz);
         services.AddScoped<ITagRepository, TagRepository>();
         services.AddScoped<IQuestionSetRepository, QuestionSetRepository>();
         services.AddScoped<IQuestionRepository, QuestionRepository>();
+        services.AddScoped<Shared.Core.ModuleServices.IQuestionQueryService, QuestionQueryService>();
     }
 
     public static IApplicationBuilder MigrateQuestionModuleDatabase(this IApplicationBuilder app)

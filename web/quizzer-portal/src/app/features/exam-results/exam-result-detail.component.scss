@@ -1,0 +1,24 @@
+:host {
+  display: block;
+  padding: 1rem;
+}
+
+.correct {
+  border-left-color: var(--green-500);
+  background: color-mix(in srgb, var(--green-500) 5%, var(--surface-card));
+}
+
+.incorrect {
+  border-left-color: var(--red-500);
+  background: color-mix(in srgb, var(--red-500) 5%, var(--surface-card));
+}
+
+@media (max-width: 768px) {
+  :host {
+    padding: 0.5rem;
+  }
+}
+
+:host ::ng-deep .p-dialog {
+  max-width: 95vw;
+}

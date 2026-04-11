@@ -20,4 +20,10 @@ public sealed class QuestionOption : BaseAuditableEntity
     {
         return new QuestionOption(text, isAnswer);
     }
+
+    public void Update(string optionText, bool isAnswer)
+    {
+        OptionText = optionText;
+        IsAnswer = isAnswer;
+    }
 }

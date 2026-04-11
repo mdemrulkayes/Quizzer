@@ -4,9 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Modules.Identity.Constants;
 using Modules.Identity.Entities;
-using Modules.Identity.Features.Registration;
-using Modules.Identity.Features.Registration.Enums;
-using Modules.Identity.Features.Registration.Services;
 using Modules.Identity.Models;
 using Serilog;
 using Shared.Core;
@@ -81,7 +78,7 @@ public static class SeedIdentityData
             
             if (applicationUser is not null && !isUserExist)
             {
-                userManager.CreateAsync(applicationUser).Wait();
+                userManager.CreateAsync(applicationUser, user.Password).Wait();
                 logger.Information("Default admin user created successfully.");
 
                 userManager.AddToRoleAsync(applicationUser, RoleConstants.SuperAdmin).Wait();

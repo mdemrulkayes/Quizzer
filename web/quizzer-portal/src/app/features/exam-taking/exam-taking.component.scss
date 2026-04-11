@@ -1,0 +1,24 @@
+:host ::ng-deep .timer-tag {
+  font-size: 1.1rem;
+  padding: 0.4rem 0.8rem;
+}
+
+:host ::ng-deep .timer-progress .p-progressbar {
+  height: 6px;
+}
+
+:host ::ng-deep .nav-btn {
+  width: 100%;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+:host ::ng-deep .submit-btn {
+  width: 100%;
+}
+
+:host ::ng-deep .p-dialog {
+  max-width: 95vw;
+}

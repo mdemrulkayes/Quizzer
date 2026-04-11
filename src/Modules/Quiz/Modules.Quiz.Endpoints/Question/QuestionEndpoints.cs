@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Modules.Identity.Constants;
 using Modules.Quiz.Application.Question.Question.Create;
 using Modules.Quiz.Application.Question.Question.Delete;
 using Modules.Quiz.Application.Question.Question.Dtos;
@@ -22,31 +23,31 @@ internal class QuestionEndpoints : IBaseEndpoint
             .Produces((int)HttpStatusCode.OK, typeof(PagedListDto<QuestionResponse>))
             .ProducesValidationProblem()
             .WithTags(QuestionModuleConstants.RouteTag.QuestionTag)
-            .RequireAuthorization();
+            .RequireAuthorization(AuthorizationPolicyConstants.AuthenticatedPolicy);
 
         routeBuilder.MapGet(QuestionModuleConstants.Route.QuestionRoute.GetQuestionDetailsById, GetQuestionDetailsById)
             .Produces((int)HttpStatusCode.OK, typeof(QuestionResponse))
             .ProducesValidationProblem()
             .WithTags(QuestionModuleConstants.RouteTag.QuestionTag)
-            .RequireAuthorization();
+            .RequireAuthorization(AuthorizationPolicyConstants.AuthenticatedPolicy);
 
         routeBuilder.MapPost(QuestionModuleConstants.Route.QuestionRoute.CreateQuestion, CreateQuestion)
             .Produces((int)HttpStatusCode.OK, typeof(QuestionResponse))
             .ProducesValidationProblem()
             .WithTags(QuestionModuleConstants.RouteTag.QuestionTag)
-            .RequireAuthorization();
+            .RequireAuthorization(AuthorizationPolicyConstants.QuizAuthorPolicy);
 
         routeBuilder.MapPut(QuestionModuleConstants.Route.QuestionRoute.UpdateQuestion, UpdateQuestion)
             .Produces((int)HttpStatusCode.OK, typeof(QuestionResponse))
             .ProducesValidationProblem()
             .WithTags(QuestionModuleConstants.RouteTag.QuestionTag)
-            .RequireAuthorization();
+            .RequireAuthorization(AuthorizationPolicyConstants.QuizAuthorPolicy);
 
         routeBuilder.MapDelete(QuestionModuleConstants.Route.QuestionRoute.DeleteQuestion, DeleteQuestion)
             .Produces((int)HttpStatusCode.OK, typeof(bool))
             .ProducesValidationProblem()
             .WithTags(QuestionModuleConstants.RouteTag.QuestionTag)
-            .RequireAuthorization();
+            .RequireAuthorization(AuthorizationPolicyConstants.QuizAuthorPolicy);
     }
 
     private async Task<IResult> GetAllQuestions(ISender sender, [AsParameters] GetAllQuestionQuery query)

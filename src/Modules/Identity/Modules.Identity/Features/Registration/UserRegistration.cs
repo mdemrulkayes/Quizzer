@@ -13,8 +13,7 @@ internal class UserRegistration : IBaseEndpoint
     {
         routeBuilder.MapPost(IdentityModuleConstants.Route.Register, RegisterUser)
             .WithName(nameof(IdentityModuleConstants.Route.Register))
-            .WithTags(IdentityModuleConstants.RouteTag.IdentityTagName)
-            .WithOpenApi();
+            .WithTags(IdentityModuleConstants.RouteTag.IdentityTagName);
     }
 
     private static async Task<IResult> RegisterUser(UserRegistrationCommand command, IMediator mediator)

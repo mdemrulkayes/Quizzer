@@ -1,6 +1,4 @@
-﻿using Shared.Core;
-
-namespace Modules.Identity.Features.Login;
+﻿namespace Modules.Identity.Features.Login;
 
 internal sealed record AccessTokenResponse(
     string Token,

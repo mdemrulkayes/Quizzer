@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Modules.Exam.Infrastructure.Persistence;
 using Modules.Identity.Persistence;
 using Modules.Quiz.Infrastructure.Data;
 using Testcontainers.MsSql;
@@ -28,11 +29,13 @@ public class QuizzerWebApiFactory : WebApplicationFactory<Program>, IAsyncLifeti
 
             var questionModuleDbContextDescriptor = typeof(DbContextOptions<QuestionModuleDbContext>);
 
+            var examModuleDbContextDescriptor = typeof(DbContextOptions<ExamModuleDbContext>);
+
             var descriptor = services
-                .Where(s => s.ServiceType == descriptorType || s.ServiceType == questionModuleDbContextDescriptor)
+                .Where(s => s.ServiceType == descriptorType
+                    || s.ServiceType == questionModuleDbContextDescriptor
+                    || s.ServiceType == examModuleDbContextDescriptor)
                 .ToList();
-
-
 
             if (descriptor.Any())
             {
@@ -47,6 +50,11 @@ public class QuizzerWebApiFactory : WebApplicationFactory<Program>, IAsyncLifeti
             });
 
             services.AddDbContext<QuestionModuleDbContext>(opt =>
+            {
+                opt.UseSqlServer(cs);
+            });
+
+            services.AddDbContext<ExamModuleDbContext>(opt =>
             {
                 opt.UseSqlServer(cs);
             });

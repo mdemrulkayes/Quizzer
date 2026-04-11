@@ -1,8 +1,9 @@
-﻿using Modules.Quiz.Core.QuestionAggregate;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Modules.Quiz.Core.QuestionAggregate;
 using Shared.Core;
 
 namespace Modules.Quiz.Application.Question.Question.Delete;
-internal sealed class DeleteQuestionCommandHandler(IQuestionRepository repository, IUnitOfWork unitOfWork) : ICommandHandler<DeleteQuestionCommand, Result<bool>>
+internal sealed class DeleteQuestionCommandHandler(IQuestionRepository repository, [FromKeyedServices(ModuleKeys.Quiz)] IUnitOfWork unitOfWork) : ICommandHandler<DeleteQuestionCommand, Result<bool>>
 {
     public async Task<Result<bool>> Handle(DeleteQuestionCommand request, CancellationToken cancellationToken = default)
     {

@@ -1,0 +1,31 @@
+@import "tailwindcss";
+@import "primeicons/primeicons.css";
+
+/* Global styles */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: var(--p-font-family);
+  background: var(--p-surface-ground);
+  color: var(--p-text-color);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--p-surface-300);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--p-surface-400);
+}

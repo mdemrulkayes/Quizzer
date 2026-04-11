@@ -1,13 +1,8 @@
-﻿using Modules.Identity.Features.Registration.Enums;
-using Shared.Core;
+﻿using Shared.Core;
 
 namespace Modules.Identity.Features.Registration;
-internal sealed record UserRegistrationCommand (
-    string FirstName,
-    string LastName,
+internal sealed record UserRegistrationCommand(
+    string FullName,
     string Email,
-    string PhoneNumber,
-    string Password,
-    string ConfirmPassword,
-    UserType UserType
+    string Password
     ) : ICommand<Result<bool>>;

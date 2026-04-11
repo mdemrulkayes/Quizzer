@@ -1,0 +1,21 @@
+<div class="flex items-center justify-between px-4 h-16 bg-[var(--p-surface-0)] border-b border-[var(--p-surface-200)]">
+  <div class="flex items-center">
+    <p-button
+      icon="pi pi-bars"
+      [text]="true"
+      [rounded]="true"
+      severity="secondary"
+      (onClick)="toggleSidebar.emit()"
+    />
+  </div>
+  <div class="flex items-center gap-2">
+    <p-button
+      [label]="userName()"
+      icon="pi pi-user"
+      [text]="true"
+      severity="secondary"
+      (onClick)="userMenu.toggle($event)"
+    />
+    <p-menu #userMenu [model]="userMenuItems" [popup]="true" />
+  </div>
+</div>

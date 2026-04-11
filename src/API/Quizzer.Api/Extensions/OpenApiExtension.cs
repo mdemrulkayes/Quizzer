@@ -1,41 +1,49 @@
-﻿using Scalar.AspNetCore;
+﻿using Microsoft.OpenApi;
+using System.Reflection.Metadata;
 
 namespace Quizzer.Api.Extensions;
 
-/// <summary>
-/// Extension methods for OpenAPI and Scalar API documentation configuration
-/// </summary>
 public static class OpenApiExtension
 {
-    /// <summary>
-    /// Register OpenAPI documentation with Scalar UI for .NET 10
-    /// Native OpenAPI support replaces deprecated Swagger/Swashbuckle
-    /// </summary>
     public static IServiceCollection AddOpenApiDocumentation(this IServiceCollection services)
     {
-        // Add native OpenAPI support
         services.AddOpenApi();
-        
+        services.AddSwaggerGen(options =>
+        {
+            options.SwaggerDoc("v1", new OpenApiInfo
+            {
+                Title = "Quizzer API",
+                Version = "v1",
+                Description = "Online Exam Platform API"
+            });
+
+            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                Name = "Authorization",
+                Description = "Enter the Bearer token: `Bearer {your JWT token}`",
+                In = ParameterLocation.Header,
+                Type = SecuritySchemeType.Http,
+                Scheme = "Bearer",
+                BearerFormat = "JWT"
+            });
+
+            options.AddSecurityRequirement(doc => new OpenApiSecurityRequirement
+            {
+                [new OpenApiSecuritySchemeReference("Bearer", doc)] = []
+            });
+        });
+
         return services;
     }
 
-    /// <summary>
-    /// Map OpenAPI endpoints and Scalar UI
-    /// </summary>
     public static WebApplication MapOpenApiDocumentation(this WebApplication app)
     {
         if (app.Environment.IsDevelopment())
         {
-            // Enable OpenAPI specification endpoint at /openapi/v1.json
             app.MapOpenApi();
-
-            // Map Scalar API Reference UI at /scalar/v1
-            app.MapScalarApiReference(options =>
+            app.UseSwaggerUI(opt =>
             {
-                options
-                    .WithTitle("Quizzer API Documentation")
-                    .WithTheme(ScalarTheme.Kepler)
-                    .WithDarkModeToggle(true);
+                opt.SwaggerEndpoint("/openapi/v1.json", "Quizzer API V1");
             });
         }
 

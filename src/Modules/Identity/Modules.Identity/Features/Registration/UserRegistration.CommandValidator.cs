@@ -8,15 +8,13 @@ internal sealed class UserRegistrationCommandValidator : AbstractValidator<UserR
     public UserRegistrationCommandValidator(IUserRegistrationService userRegistrationService)
     {
         _userRegistrationService = userRegistrationService;
-        RuleFor(x => x.FirstName)
-            .NotNull()
-            .NotEmpty()
-            .WithMessage("First name can not be empty");
 
-        RuleFor(x => x.LastName)
+        RuleFor(x => x.FullName)
             .NotNull()
             .NotEmpty()
-            .WithMessage("Last name can not be empty");
+            .WithMessage("Full name can not be empty")
+            .MaximumLength(200)
+            .WithMessage("Full name must not exceed 200 characters");
 
         RuleFor(x => x.Email)
             .NotNull()
@@ -26,29 +24,14 @@ internal sealed class UserRegistrationCommandValidator : AbstractValidator<UserR
             .WithMessage("Invalid email address")
             .MustAsync(async (email, _) => !await IsUserAlreadyExistsWithTheSameEmail(email));
 
-        RuleFor(x => x.PhoneNumber)
-            .NotNull()
-            .NotEmpty()
-            .WithMessage("Phone number can not be empty");
-
         RuleFor(x => x.Password)
             .NotNull()
             .NotEmpty()
             .WithMessage("Password is required");
-
-        RuleFor(x => x.ConfirmPassword)
-            .NotNull()
-            .NotEmpty()
-            .WithMessage("Confirm password can not be empty")
-            .Matches(x => x.Password)
-            .WithMessage("Password and Confirm password does not match");
-
-        RuleFor(x => x.UserType)
-            .NotNull()
-            .IsInEnum();
     }
 
     private async Task<bool> IsUserAlreadyExistsWithTheSameEmail(string email)
     {
         return await _userRegistrationService.GetUserDetailsByEmail(email) is not null;
-    }}
+    }
+}

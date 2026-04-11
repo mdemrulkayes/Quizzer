@@ -18,12 +18,12 @@ namespace Modules.Question.Infrastructure.Data.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("Question")
-                .HasAnnotation("ProductVersion", "9.0.0")
+                .HasAnnotation("ProductVersion", "10.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Modules.Question.Core.QuestionAggregate.Question", b =>
+            modelBuilder.Entity("Modules.Quiz.Core.QuestionAggregate.Question", b =>
                 {
                     b.Property<long>("QuestionId")
                         .ValueGeneratedOnAdd()
@@ -75,7 +75,7 @@ namespace Modules.Question.Infrastructure.Data.Migrations
                     b.ToTable("Questions", "Question");
                 });
 
-            modelBuilder.Entity("Modules.Question.Core.QuestionAggregate.QuestionOption", b =>
+            modelBuilder.Entity("Modules.Quiz.Core.QuestionAggregate.QuestionOption", b =>
                 {
                     b.Property<long>("QuestionOptionId")
                         .ValueGeneratedOnAdd()
@@ -123,7 +123,7 @@ namespace Modules.Question.Infrastructure.Data.Migrations
                     b.ToTable("QuestionOptions", "Question");
                 });
 
-            modelBuilder.Entity("Modules.Question.Core.QuestionAggregate.QuestionSet", b =>
+            modelBuilder.Entity("Modules.Quiz.Core.QuestionAggregate.QuestionSet", b =>
                 {
                     b.Property<long>("QuestionSetId")
                         .ValueGeneratedOnAdd()
@@ -170,7 +170,7 @@ namespace Modules.Question.Infrastructure.Data.Migrations
                     b.ToTable("QuestionSets", "Question");
                 });
 
-            modelBuilder.Entity("Modules.Question.Core.QuestionAggregate.QuestionSetTag", b =>
+            modelBuilder.Entity("Modules.Quiz.Core.QuestionAggregate.QuestionSetTag", b =>
                 {
                     b.Property<long>("QuestionSetId")
                         .HasColumnType("bigint");
@@ -185,7 +185,7 @@ namespace Modules.Question.Infrastructure.Data.Migrations
                     b.ToTable("QuestionSetTags", "Question");
                 });
 
-            modelBuilder.Entity("Modules.Question.Core.Tag.Tag", b =>
+            modelBuilder.Entity("Modules.Quiz.Core.Tag.Tag", b =>
                 {
                     b.Property<long>("TagId")
                         .ValueGeneratedOnAdd()
@@ -228,9 +228,9 @@ namespace Modules.Question.Infrastructure.Data.Migrations
                     b.ToTable("Tag", "Question");
                 });
 
-            modelBuilder.Entity("Modules.Question.Core.QuestionAggregate.Question", b =>
+            modelBuilder.Entity("Modules.Quiz.Core.QuestionAggregate.Question", b =>
                 {
-                    b.HasOne("Modules.Question.Core.QuestionAggregate.QuestionSet", "QuestionSet")
+                    b.HasOne("Modules.Quiz.Core.QuestionAggregate.QuestionSet", "QuestionSet")
                         .WithMany("Questions")
                         .HasForeignKey("QuestionSetId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -239,9 +239,9 @@ namespace Modules.Question.Infrastructure.Data.Migrations
                     b.Navigation("QuestionSet");
                 });
 
-            modelBuilder.Entity("Modules.Question.Core.QuestionAggregate.QuestionOption", b =>
+            modelBuilder.Entity("Modules.Quiz.Core.QuestionAggregate.QuestionOption", b =>
                 {
-                    b.HasOne("Modules.Question.Core.QuestionAggregate.Question", "Question")
+                    b.HasOne("Modules.Quiz.Core.QuestionAggregate.Question", "Question")
                         .WithMany("Options")
                         .HasForeignKey("QuestionId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -250,15 +250,15 @@ namespace Modules.Question.Infrastructure.Data.Migrations
                     b.Navigation("Question");
                 });
 
-            modelBuilder.Entity("Modules.Question.Core.QuestionAggregate.QuestionSetTag", b =>
+            modelBuilder.Entity("Modules.Quiz.Core.QuestionAggregate.QuestionSetTag", b =>
                 {
-                    b.HasOne("Modules.Question.Core.QuestionAggregate.QuestionSet", "QuestionSet")
+                    b.HasOne("Modules.Quiz.Core.QuestionAggregate.QuestionSet", "QuestionSet")
                         .WithMany("QuestionSetTags")
                         .HasForeignKey("QuestionSetId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Modules.Question.Core.Tag.Tag", "Tag")
+                    b.HasOne("Modules.Quiz.Core.Tag.Tag", "Tag")
                         .WithMany("QuestionSetTags")
                         .HasForeignKey("TagId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -269,19 +269,19 @@ namespace Modules.Question.Infrastructure.Data.Migrations
                     b.Navigation("Tag");
                 });
 
-            modelBuilder.Entity("Modules.Question.Core.QuestionAggregate.Question", b =>
+            modelBuilder.Entity("Modules.Quiz.Core.QuestionAggregate.Question", b =>
                 {
                     b.Navigation("Options");
                 });
 
-            modelBuilder.Entity("Modules.Question.Core.QuestionAggregate.QuestionSet", b =>
+            modelBuilder.Entity("Modules.Quiz.Core.QuestionAggregate.QuestionSet", b =>
                 {
                     b.Navigation("QuestionSetTags");
 
                     b.Navigation("Questions");
                 });
 
-            modelBuilder.Entity("Modules.Question.Core.Tag.Tag", b =>
+            modelBuilder.Entity("Modules.Quiz.Core.Tag.Tag", b =>
                 {
                     b.Navigation("QuestionSetTags");
                 });

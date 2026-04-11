@@ -1,8 +1,9 @@
-﻿using Modules.Quiz.Core.Tag;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Modules.Quiz.Core.Tag;
 using Shared.Core;
 
 namespace Modules.Quiz.Application.Tag.Delete;
-internal sealed class DeleteTagCommandHandler(ITagRepository repository, IUnitOfWork unitOfWork) : ICommandHandler<DeleteTagCommand, Result<bool>>
+internal sealed class DeleteTagCommandHandler(ITagRepository repository, [FromKeyedServices(ModuleKeys.Quiz)] IUnitOfWork unitOfWork) : ICommandHandler<DeleteTagCommand, Result<bool>>
 {
     public async Task<Result<bool>> Handle(DeleteTagCommand request, CancellationToken cancellationToken = default)
     {

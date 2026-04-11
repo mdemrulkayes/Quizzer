@@ -1,0 +1,86 @@
+@if (loading()) {
+  <div class="flex flex-col items-center justify-center p-12 gap-4">
+    <i class="pi pi-spin pi-spinner text-[2rem]"></i>
+    <p>Loading exam result...</p>
+  </div>
+} @else if (error()) {
+  <div class="flex flex-col items-center justify-center p-12 gap-4">
+    <i class="pi pi-exclamation-triangle text-[2rem] text-[var(--red-500)]"></i>
+    <p>{{ error() }}</p>
+    <p-button label="Go Back" icon="pi pi-arrow-left" severity="secondary" (onClick)="goBack()" />
+  </div>
+} @else if (result(); as r) {
+  <div>
+    <div class="mb-4">
+      <p-button label="Back to Results" icon="pi pi-arrow-left" severity="secondary" [text]="true" (onClick)="goBack()" />
+    </div>
+
+    <p-card>
+      <div class="flex flex-col gap-6">
+        <div class="flex items-center justify-between flex-wrap gap-2">
+          <h2 class="m-0 text-2xl">{{ r.examTitle }}</h2>
+          @if (r.isPassed === true) {
+            <p-tag value="Passed" severity="success" [rounded]="true" />
+          } @else if (r.isPassed === false) {
+            <p-tag value="Failed" severity="danger" [rounded]="true" />
+          } @else {
+            <p-tag value="Pending" severity="warn" [rounded]="true" />
+          }
+        </div>
+
+        <div class="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-4 max-md:grid-cols-2">
+          <div class="flex flex-col gap-1">
+            <span class="text-[0.85rem] text-[var(--text-color-secondary)] font-semibold uppercase">Score</span>
+            <span class="text-[1.1rem] font-medium">{{ r.totalScore ?? 0 }} / {{ r.totalMarks }}</span>
+          </div>
+          <div class="flex flex-col gap-1">
+            <span class="text-[0.85rem] text-[var(--text-color-secondary)] font-semibold uppercase">Passing Marks</span>
+            <span class="text-[1.1rem] font-medium">{{ r.passingMarks }}</span>
+          </div>
+          <div class="flex flex-col gap-1">
+            <span class="text-[0.85rem] text-[var(--text-color-secondary)] font-semibold uppercase">Submitted</span>
+            <span class="text-[1.1rem] font-medium">{{ r.submittedAt ? (r.submittedAt | date: 'medium') : 'Not submitted' }}</span>
+          </div>
+          <div class="flex flex-col gap-1">
+            <span class="text-[0.85rem] text-[var(--text-color-secondary)] font-semibold uppercase">Status</span>
+            <span class="text-[1.1rem] font-medium">{{ r.status }}</span>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <span class="font-semibold text-[0.9rem]">{{ scorePercentage() }}%</span>
+          <p-progressbar [value]="scorePercentage()" [showValue]="false" />
+        </div>
+      </div>
+    </p-card>
+
+    <h3 class="mt-6 mb-4">Question Breakdown</h3>
+
+    @for (answer of r.answers; track answer.questionId; let i = $index) {
+      <div class="border border-[var(--surface-border)] border-l-4 border-l-[var(--surface-border)] rounded-md p-4 mb-3 bg-[var(--surface-card)] transition-[border-color] duration-200" [class.correct]="answer.isCorrect === true" [class.incorrect]="answer.isCorrect === false">
+        <div class="flex items-start gap-3 mb-3">
+          <span class="font-bold bg-[var(--surface-200)] rounded px-2 py-[0.15rem] text-[0.85rem] whitespace-nowrap">Q{{ i + 1 }}</span>
+          <span class="flex-1 font-medium">{{ answer.questionText }}</span>
+          <span class="font-semibold whitespace-nowrap text-[var(--text-color-secondary)]">
+            {{ answer.marksAwarded ?? 0 }} pts
+          </span>
+        </div>
+        <div class="flex items-center gap-3 pl-10 flex-wrap max-md:pl-0">
+          <span class="text-[0.85rem] text-[var(--text-color-secondary)]">Your Answer:</span>
+          @if (answer.selectedOptionText) {
+            <span class="font-medium">{{ answer.selectedOptionText }}</span>
+          } @else {
+            <span class="font-medium italic text-[var(--text-color-secondary)]">Not answered</span>
+          }
+          @if (answer.isCorrect === true) {
+            <p-tag value="Correct" severity="success" />
+          } @else if (answer.isCorrect === false) {
+            <p-tag value="Incorrect" severity="danger" />
+          } @else {
+            <p-tag value="Pending" severity="warn" />
+          }
+        </div>
+      </div>
+    }
+  </div>
+}

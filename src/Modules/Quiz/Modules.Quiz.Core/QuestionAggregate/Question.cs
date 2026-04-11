@@ -45,6 +45,11 @@ public sealed class Question : BaseAuditableEntity
             _questionOptions.Add(questionOption);
     }
 
+    public bool RemoveOption(QuestionOption option)
+    {
+        return _questionOptions.Remove(option);
+    }
+
     public void Delete()
     {
         IsDeleted = true;

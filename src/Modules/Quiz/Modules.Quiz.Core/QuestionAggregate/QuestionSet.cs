@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using Shared.Core;
+using TagCore = Modules.Quiz.Core.Tag.Tag;
 
 namespace Modules.Quiz.Core.QuestionAggregate;
 
@@ -37,6 +38,31 @@ public sealed class QuestionSet : BaseAuditableEntity, IAggregateRoot
         Details = details;
 
         return this;
+    }
+
+    public void Delete()
+    {
+        IsDeleted = true;
+    }
+
+    public Result<QuestionSetTag> AddTag(TagCore tag)
+    {
+        if (_questionSetTags.Any(t => t.TagId == tag.TagId))
+            return QuestionErrors.TagAlreadyAssigned;
+
+        var questionSetTag = new QuestionSetTag(tag, this);
+        _questionSetTags.Add(questionSetTag);
+        return questionSetTag;
+    }
+
+    public Result<bool> RemoveTag(long tagId)
+    {
+        var questionSetTag = _questionSetTags.FirstOrDefault(t => t.TagId == tagId);
+        if (questionSetTag is null)
+            return QuestionErrors.TagNotAssigned;
+
+        _questionSetTags.Remove(questionSetTag);
+        return true;
     }
 
     public void AddQuestions(List<Question> questions)

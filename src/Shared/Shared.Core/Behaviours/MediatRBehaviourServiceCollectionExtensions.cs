@@ -2,6 +2,7 @@
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using Shared.Core.Caching;
 
 namespace Shared.Core.Behaviours;
 public static class MediatRBehaviourServiceCollectionExtensions
@@ -20,6 +21,13 @@ public static class MediatRBehaviourServiceCollectionExtensions
 
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
 
+        return services;
+    }
+
+    public static IServiceCollection AddMediatRQueryCachingBehaviour(this IServiceCollection services)
+    {
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(QueryCachingBehaviour<,>));
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CacheInvalidationBehaviour<,>));
         return services;
     }
 }

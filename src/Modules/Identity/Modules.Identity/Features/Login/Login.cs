@@ -15,15 +15,14 @@ internal sealed class Login : IBaseEndpoint
             .MapPost(IdentityModuleConstants.Route.Login, LoginHandler)
             // .Produces<AccessTokenResponse>()
             .WithName(nameof(IdentityModuleConstants.Route.Login))
-            .WithTags(IdentityModuleConstants.RouteTag.IdentityTagName)
-            .WithOpenApi();
+            .WithTags(IdentityModuleConstants.RouteTag.IdentityTagName);
     }
 
     private static async Task<IResult> LoginHandler(LoginCommand command, IMediator mediator, ILogger<Login> logger)
     {
-        logger.LogInformation("Login request received for {Email}", command.Email);
+        logger.LogInformation("Login request received");
         var result = await mediator.Send(command);
-        logger.LogInformation("Login request completed for {Email} and response {ResponseIsSuccess}", command.Email, result.IsSuccess);
+        logger.LogInformation("Login request completed, success: {ResponseIsSuccess}", result.IsSuccess);
         return result.IsSuccess ?
             TypedResults.Ok(result.Value) :
             result.ConvertToProblemDetails();

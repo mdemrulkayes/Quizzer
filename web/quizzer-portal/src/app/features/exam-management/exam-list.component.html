@@ -1,0 +1,136 @@
+<p-toolbar>
+  <ng-template #start>
+    <h2 style="margin: 0;">Exam Management</h2>
+  </ng-template>
+  <ng-template #end>
+    <p-button label="Create Exam" icon="pi pi-plus" (onClick)="openCreateDialog()" />
+  </ng-template>
+</p-toolbar>
+
+<p-table
+  [value]="exams()"
+  [lazy]="true"
+  [paginator]="true"
+  [rows]="pageSize()"
+  [totalRecords]="totalRecords()"
+  [loading]="loading()"
+  [rowsPerPageOptions]="[5, 10, 25]"
+  (onLazyLoad)="onLazyLoad($event)"
+>
+  <ng-template #header>
+    <tr>
+      <th>Title</th>
+      <th>Description</th>
+      <th>Duration (min)</th>
+      <th>Total Marks</th>
+      <th>Passing Marks</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
+  </ng-template>
+  <ng-template #body let-exam>
+    <tr>
+      <td>{{ exam.title }}</td>
+      <td>{{ exam.description | slice:0:50 }}@if (exam.description && exam.description.length > 50) {…}</td>
+      <td>{{ exam.durationInMinutes }}</td>
+      <td>{{ exam.totalMarks }}</td>
+      <td>{{ exam.passingMarks }}</td>
+      <td>
+        <p-tag
+          [value]="exam.isPublished ? 'Published' : 'Draft'"
+          [severity]="exam.isPublished ? 'success' : 'warn'"
+        />
+      </td>
+      <td class="flex gap-1">
+        @if (!exam.isPublished) {
+          <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" severity="info" (onClick)="openEditDialog(exam)" pTooltip="Edit" />
+        }
+        @if (exam.isPublished) {
+          <p-button icon="pi pi-times" [rounded]="true" [text]="true" severity="warn" (onClick)="confirmTogglePublish(exam)" pTooltip="Unpublish" />
+        } @else {
+          <p-button icon="pi pi-check" [rounded]="true" [text]="true" severity="success" (onClick)="confirmTogglePublish(exam)" pTooltip="Publish" />
+        }
+        <p-button icon="pi pi-chart-bar" [rounded]="true" [text]="true" severity="secondary" (onClick)="viewResults(exam)" pTooltip="View Results" />
+        @if (!exam.isPublished) {
+          <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" (onClick)="confirmDelete(exam)" pTooltip="Delete" />
+        }
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template #emptymessage>
+    <tr>
+      <td colspan="7" class="text-center">No exams found.</td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<p-dialog
+  [header]="editingExam() ? 'Edit Exam' : 'Create Exam'"
+  [(visible)]="dialogVisible"
+  [modal]="true"
+  [style]="{ width: '36rem' }"
+  (onHide)="onDialogHide()"
+>
+  <form [formGroup]="form" (ngSubmit)="onSave()">
+    <div class="flex flex-col gap-4">
+      <div class="flex flex-col gap-1.5">
+        <label for="title" class="font-semibold text-sm">Title *</label>
+        <input pInputText id="title" formControlName="title" class="w-full" />
+      </div>
+      <div class="flex flex-col gap-1.5">
+        <label for="description" class="font-semibold text-sm">Description</label>
+        <textarea pTextarea id="description" formControlName="description" class="w-full" rows="3"></textarea>
+      </div>
+      @if (!editingExam()) {
+        <div class="flex flex-col gap-1.5">
+          <label for="questionSetId" class="font-semibold text-sm">Question Set *</label>
+          <p-select
+            id="questionSetId"
+            formControlName="questionSetId"
+            [options]="questionSets()"
+            optionLabel="name"
+            optionValue="questionSetId"
+            placeholder="Select a question set"
+            class="w-full"
+          />
+        </div>
+      }
+      <div class="flex gap-4 max-md:flex-col">
+        <div class="flex flex-col gap-1.5 flex-1">
+          <label for="durationInMinutes" class="font-semibold text-sm">Duration (min)</label>
+          <p-inputnumber id="durationInMinutes" formControlName="durationInMinutes" class="w-full" />
+        </div>
+        <div class="flex flex-col gap-1.5 flex-1">
+          <label for="totalMarks" class="font-semibold text-sm">Total Marks</label>
+          <p-inputnumber id="totalMarks" formControlName="totalMarks" class="w-full" />
+        </div>
+        <div class="flex flex-col gap-1.5 flex-1">
+          <label for="passingMarks" class="font-semibold text-sm">Passing Marks</label>
+          <p-inputnumber id="passingMarks" formControlName="passingMarks" class="w-full" />
+        </div>
+      </div>
+      <div class="flex gap-4 max-md:flex-col">
+        <div class="flex flex-col gap-1.5 flex-1">
+          <label for="scheduledStartTime" class="font-semibold text-sm">Scheduled Start</label>
+          <p-datepicker id="scheduledStartTime" formControlName="scheduledStartTime" [showTime]="true" class="w-full" />
+        </div>
+        <div class="flex flex-col gap-1.5 flex-1">
+          <label for="scheduledEndTime" class="font-semibold text-sm">Scheduled End</label>
+          <p-datepicker id="scheduledEndTime" formControlName="scheduledEndTime" [showTime]="true" class="w-full" />
+        </div>
+      </div>
+      <div class="flex justify-end gap-2 mt-2">
+        <p-button label="Cancel" severity="secondary" (onClick)="dialogVisible = false" />
+        <p-button
+          label="Save"
+          icon="pi pi-check"
+          type="submit"
+          [disabled]="form.invalid"
+          [loading]="saving()"
+        />
+      </div>
+    </div>
+  </form>
+</p-dialog>
+
+<p-confirmDialog />

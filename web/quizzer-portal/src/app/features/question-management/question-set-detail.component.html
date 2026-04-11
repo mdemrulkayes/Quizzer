@@ -1,0 +1,156 @@
+<div class="flex justify-between items-center mb-6">
+  <h2 class="m-0 text-[var(--p-text-color)] text-2xl">Question Set Detail</h2>
+  <p-button label="Back to List" icon="pi pi-arrow-left" [text]="true" (onClick)="goBack()" />
+</div>
+
+@if (loading()) {
+  <p>Loading...</p>
+} @else if (questionSet()) {
+  <div class="bg-[var(--p-surface-0)] border border-[var(--p-surface-200)] rounded-[var(--p-border-radius)] p-6 mb-6">
+    <h3 class="mt-0 mb-2 text-[var(--p-text-color)]">{{ questionSet()!.name }}</h3>
+    @if (questionSet()!.setCode) {
+      <p class="my-1 text-[var(--p-text-muted-color)]"><strong>Code:</strong> {{ questionSet()!.setCode }}</p>
+    }
+    @if (questionSet()!.details) {
+      <p class="my-1 text-[var(--p-text-muted-color)]">{{ questionSet()!.details }}</p>
+    }
+  </div>
+
+  <!-- Tags Section -->
+  <div class="bg-[var(--p-surface-0)] border border-[var(--p-surface-200)] rounded-[var(--p-border-radius)] p-6 mb-6">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="m-0 text-[var(--p-text-color)]">Tags</h3>
+    </div>
+    <div class="flex flex-wrap gap-2 mb-4">
+      @for (tag of tags(); track tag.tagId) {
+        <p-chip [label]="tag.name" [removable]="true" (onRemove)="removeTag(tag)" />
+      } @empty {
+        <span class="text-[var(--p-text-muted-color)]">No tags assigned.</span>
+      }
+    </div>
+    <div class="flex gap-2 items-center">
+      <p-select
+        [options]="availableTags()"
+        [(ngModel)]="selectedTagId"
+        optionLabel="name"
+        optionValue="tagId"
+        placeholder="Select a tag to add"
+        [style]="{ minWidth: '220px' }"
+      />
+      <p-button label="Add Tag" icon="pi pi-plus" [disabled]="!selectedTagId" (onClick)="addTag()" size="small" />
+    </div>
+  </div>
+
+  <!-- Questions Section -->
+  <div class="bg-[var(--p-surface-0)] border border-[var(--p-surface-200)] rounded-[var(--p-border-radius)] p-6 mb-6">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="m-0 text-[var(--p-text-color)]">Questions ({{ questionSet()!.questions.length }})</h3>
+      <p-button label="Add Question" icon="pi pi-plus" (onClick)="openNewQuestion()" />
+    </div>
+    <div class="flex flex-col gap-4">
+      @for (q of questionSet()!.questions; track q.questionId; let i = $index) {
+        <p-panel
+          [header]="'Q' + (i + 1) + ': ' + truncate(q.question, 80)"
+          [toggleable]="true"
+          [collapsed]="true"
+        >
+          <div class="flex flex-col gap-3">
+            <div>
+              <p class="my-1"><strong>Question:</strong> {{ q.question }}</p>
+              @if (q.details) {
+                <p class="my-1"><strong>Details:</strong> {{ q.details }}</p>
+              }
+              <p class="my-1"><strong>Marks:</strong> {{ q.mark ?? 'N/A' }}</p>
+            </div>
+            <h4 class="mt-2 mb-1 text-[var(--p-text-color)]">Options</h4>
+            <div class="flex flex-col gap-2">
+              @for (opt of q.questionOptions; track opt.questionOptionId) {
+                <div [class]="'flex items-center gap-2 py-2 px-3 rounded-[var(--p-border-radius)] ' + (opt.isCorrect ? 'bg-[var(--p-green-50)] text-[var(--p-green-700)]' : 'bg-[var(--p-surface-50)]')">
+                  <i [class]="'text-base ' + (opt.isCorrect ? 'pi pi-check-circle' : 'pi pi-circle')"></i>
+                  <span>{{ opt.optionText }}</span>
+                  @if (opt.isCorrect) {
+                    <p-tag value="Correct" severity="success" />
+                  }
+                </div>
+              } @empty {
+                <p class="text-[var(--p-text-muted-color)]">No options defined.</p>
+              }
+            </div>
+            <div class="flex gap-2 border-t border-[var(--p-surface-200)] pt-3 mt-1">
+              <p-button icon="pi pi-pencil" label="Edit" severity="warn" [text]="true" (onClick)="editQuestion(q)" />
+              <p-button icon="pi pi-trash" label="Delete" severity="danger" [text]="true" (onClick)="confirmDeleteQuestion(q)" />
+            </div>
+          </div>
+        </p-panel>
+      } @empty {
+        <p class="text-[var(--p-text-muted-color)]">No questions yet. Click "Add Question" to get started.</p>
+      }
+    </div>
+  </div>
+}
+
+<!-- Question Form Dialog -->
+<p-dialog
+  [header]="editingQuestion() ? 'Edit Question' : 'New Question'"
+  [(visible)]="displayQuestionDialog"
+  [modal]="true"
+  [style]="{ width: '650px' }"
+  [closable]="true"
+>
+  <form [formGroup]="questionForm" (ngSubmit)="saveQuestion()">
+    <div class="flex flex-col gap-4">
+      <div class="flex flex-col gap-2">
+        <label for="qText" class="font-semibold text-[var(--p-text-color)]">Question</label>
+        <textarea id="qText" pTextarea formControlName="question" rows="3" class="w-full"></textarea>
+      </div>
+      <div class="flex flex-col gap-2">
+        <label for="qDetails" class="font-semibold text-[var(--p-text-color)]">Details</label>
+        <textarea id="qDetails" pTextarea formControlName="details" rows="2" class="w-full"></textarea>
+      </div>
+      <div class="flex flex-col gap-2">
+        <label for="qMark" class="font-semibold text-[var(--p-text-color)]">Marks</label>
+        <p-inputnumber id="qMark" formControlName="mark" [min]="0" [showButtons]="true" class="w-full" />
+      </div>
+
+      <div class="flex flex-col gap-3">
+        <div class="flex justify-between items-center">
+          <label class="font-semibold text-[var(--p-text-color)]">Options (select the correct answer)</label>
+          <p-button label="Add Option" icon="pi pi-plus" [text]="true" size="small" (onClick)="addOption()" />
+        </div>
+        <div formArrayName="options">
+          @for (option of optionsFormArray.controls; track $index; let i = $index) {
+            <div class="flex items-center gap-2" [formGroupName]="i">
+              <p-radiobutton
+                name="correctAnswer"
+                [value]="i"
+                [(ngModel)]="selectedAnswerIdx"
+                [ngModelOptions]="{ standalone: true }"
+                [inputId]="'answer_' + i"
+              />
+              <input pInputText formControlName="optionText" placeholder="Option text" class="flex-1 min-w-0" />
+              <p-button
+                icon="pi pi-trash"
+                [text]="true"
+                [rounded]="true"
+                severity="danger"
+                size="small"
+                (onClick)="removeOption(i)"
+              />
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+    <div class="flex justify-end gap-2 mt-6">
+      <p-button label="Cancel" severity="secondary" [text]="true" (onClick)="displayQuestionDialog = false" />
+      <p-button
+        label="Save"
+        icon="pi pi-check"
+        type="submit"
+        [disabled]="questionForm.invalid || optionsFormArray.length === 0"
+      />
+    </div>
+  </form>
+</p-dialog>
+
+<p-confirmDialog />

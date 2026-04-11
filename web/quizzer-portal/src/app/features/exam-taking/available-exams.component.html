@@ -1,0 +1,67 @@
+<div class="mb-8">
+  <h2>Available Exams</h2>
+</div>
+
+@if (loading()) {
+  <div class="flex justify-center items-center py-16">
+    <p-progressspinner strokeWidth="4" />
+  </div>
+} @else if (availableExams().length === 0) {
+  <div class="flex flex-col justify-center items-center py-16 gap-4 text-[var(--text-color-secondary)]">
+    <i class="pi pi-inbox text-[3rem]"></i>
+    <p>No exams available</p>
+  </div>
+} @else {
+  <div class="grid grid-cols-[repeat(auto-fill,minmax(340px,1fr))] gap-6">
+    @for (exam of availableExams(); track exam.examId) {
+      <p-card [header]="exam.title">
+        <p class="text-[var(--text-color-secondary)] mb-4 min-h-[2.5rem]">
+          {{ exam.description ?? 'No description provided.' }}
+        </p>
+        <div class="flex flex-wrap gap-2 my-4">
+          <p-tag severity="info" [value]="exam.durationInMinutes + ' min'" icon="pi pi-clock" />
+          <p-tag severity="success" [value]="'Total: ' + exam.totalMarks" icon="pi pi-star" />
+          <p-tag severity="warn" [value]="'Pass: ' + exam.passingMarks" icon="pi pi-check-circle" />
+        </div>
+        <div class="flex justify-end">
+          <p-button label="Start Exam" icon="pi pi-play" (onClick)="onStartClick(exam)" />
+        </div>
+      </p-card>
+    }
+  </div>
+
+  <div class="mt-8">
+    <p-paginator
+      [rows]="pageSize()"
+      [totalRecords]="totalRecords()"
+      [rowsPerPageOptions]="[5, 10, 25]"
+      [first]="first()"
+      (onPageChange)="onPageChange($event)"
+    />
+  </div>
+}
+
+<p-dialog
+  header="Confirm Start Exam"
+  [visible]="dialogVisible()"
+  [modal]="true"
+  [closable]="true"
+  [style]="{ width: '450px' }"
+  (visibleChange)="onDialogVisibleChange($event)"
+>
+  @if (selectedExam(); as exam) {
+    <p>Are you sure you want to start <strong>{{ exam.title }}</strong>?</p>
+    <ul class="my-4 [&>li]:mb-2">
+      <li><strong>Duration:</strong> {{ exam.durationInMinutes }} minutes</li>
+      <li><strong>Total Marks:</strong> {{ exam.totalMarks }}</li>
+      <li><strong>Passing Marks:</strong> {{ exam.passingMarks }}</li>
+    </ul>
+    <p class="mt-4 font-semibold text-[var(--orange-500)]">
+      Once started, you will have {{ exam.durationInMinutes }} minutes to complete it.
+    </p>
+    <div class="flex justify-end gap-2 mt-6">
+      <p-button label="Cancel" severity="secondary" (onClick)="onDialogCancel()" [disabled]="starting()" />
+      <p-button label="Start" icon="pi pi-play" (onClick)="onDialogConfirm()" [loading]="starting()" />
+    </div>
+  }
+</p-dialog>

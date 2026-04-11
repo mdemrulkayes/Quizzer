@@ -8,6 +8,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Identity\Modules.Identity\Modules.Identity.csproj" />
     <ProjectReference Include="..\Modules.Quiz.Application\Modules.Quiz.Application.csproj" />
     <ProjectReference Include="..\Modules.Quiz.Infrastructure\Modules.Quiz.Infrastructure.csproj" />
   </ItemGroup>
