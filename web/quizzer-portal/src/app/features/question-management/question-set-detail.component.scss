@@ -1,0 +1,180 @@
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.page-header h2 {
+  margin: 0;
+  color: var(--p-text-color);
+  font-size: 1.5rem;
+}
+
+.set-info-card {
+  background: var(--p-surface-0);
+  border: 1px solid var(--p-surface-200);
+  border-radius: var(--p-border-radius);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.set-info-card h3 {
+  margin: 0 0 0.5rem;
+  color: var(--p-text-color);
+}
+
+.set-info-card p {
+  margin: 0.25rem 0;
+  color: var(--p-text-muted-color);
+}
+
+.section-card {
+  background: var(--p-surface-0);
+  border: 1px solid var(--p-surface-200);
+  border-radius: var(--p-border-radius);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.section-header h3 {
+  margin: 0;
+  color: var(--p-text-color);
+}
+
+.tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.add-tag-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.questions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.question-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.question-meta p {
+  margin: 0.25rem 0;
+}
+
+.question-content h4 {
+  margin: 0.5rem 0 0.25rem;
+  color: var(--p-text-color);
+}
+
+.options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.option-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--p-border-radius);
+  background: var(--p-surface-50);
+}
+
+.option-item.correct {
+  background: var(--p-green-50);
+  color: var(--p-green-700);
+}
+
+.option-item i {
+  font-size: 1rem;
+}
+
+.question-actions {
+  display: flex;
+  gap: 0.5rem;
+  border-top: 1px solid var(--p-surface-200);
+  padding-top: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.form-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-field label {
+  font-weight: 600;
+  color: var(--p-text-color);
+}
+
+.options-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.options-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.options-header label {
+  font-weight: 600;
+  color: var(--p-text-color);
+}
+
+.option-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.option-text-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.text-muted {
+  color: var(--p-text-muted-color);
+}
+
+:host ::ng-deep .p-dialog {
+  max-width: 95vw;
+}

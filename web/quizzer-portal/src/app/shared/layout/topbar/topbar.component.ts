@@ -10,58 +10,8 @@ import { MenuItem } from 'primeng/api';
   standalone: true,
   imports: [Button, Menu],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <div class="topbar">
-      <div class="topbar-left">
-        <p-button
-          icon="pi pi-bars"
-          [text]="true"
-          [rounded]="true"
-          severity="secondary"
-          (onClick)="toggleSidebar.emit()"
-        />
-      </div>
-      <div class="topbar-right">
-        <p-button
-          [icon]="isDarkMode() ? 'pi pi-sun' : 'pi pi-moon'"
-          [text]="true"
-          [rounded]="true"
-          severity="secondary"
-          (onClick)="toggleDarkMode()"
-        />
-        <p-button
-          [label]="userName()"
-          icon="pi pi-user"
-          [text]="true"
-          severity="secondary"
-          (onClick)="userMenu.toggle($event)"
-        />
-        <p-menu #userMenu [model]="userMenuItems" [popup]="true" />
-      </div>
-    </div>
-  `,
-  styles: [`
-    .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 1rem;
-      height: 64px;
-      background: var(--p-surface-0);
-      border-bottom: 1px solid var(--p-surface-200);
-    }
-
-    .topbar-left {
-      display: flex;
-      align-items: center;
-    }
-
-    .topbar-right {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-  `],
+  templateUrl: './topbar.component.html',
+  styleUrl: './topbar.component.scss',
 })
 export class TopbarComponent {
   toggleSidebar = output();

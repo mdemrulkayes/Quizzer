@@ -1,0 +1,26 @@
+<div class="sidebar" [class.collapsed]="collapsed()">
+  <div class="sidebar-header">
+    <span class="logo" [class.hidden]="collapsed()">
+      <i class="pi pi-book"></i>
+      @if (!collapsed()) {
+        <span class="logo-text">Quizzer</span>
+      }
+    </span>
+  </div>
+  <nav class="sidebar-nav">
+    @for (item of filteredMenuItems(); track item.label) {
+      <a
+        class="nav-item"
+        [routerLink]="item.routerLink"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: item.routerLink?.[0] === '/dashboard' }"
+        [title]="item.label || ''"
+      >
+        <i [class]="item.icon || ''"></i>
+        @if (!collapsed()) {
+          <span>{{ item.label }}</span>
+        }
+      </a>
+    }
+  </nav>
+</div>

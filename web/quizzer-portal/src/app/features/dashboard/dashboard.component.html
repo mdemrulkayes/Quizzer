@@ -1,0 +1,39 @@
+<div class="dashboard-header">
+  <h2>Dashboard</h2>
+  <p class="welcome-text">
+    Welcome back, <strong>{{ authService.currentUser()?.firstName ?? 'User' }}</strong>!
+    <p-tag [value]="dashboardType() | titlecase" severity="info" />
+  </p>
+</div>
+
+@if (loading()) {
+  <div class="dashboard-grid">
+    @for (i of [1, 2, 3]; track i) {
+      <p-card styleClass="dashboard-card">
+        <div class="card-content">
+          <div class="card-icon skeleton-icon"></div>
+          <div class="card-info">
+            <span class="card-count skeleton-text">&nbsp;</span>
+            <span class="card-label skeleton-text">&nbsp;</span>
+          </div>
+        </div>
+      </p-card>
+    }
+  </div>
+} @else {
+  <div class="dashboard-grid">
+    @for (card of cards(); track card.label) {
+      <p-card styleClass="dashboard-card" (click)="navigateTo(card.route)">
+        <div class="card-content">
+          <div class="card-icon">
+            <i [class]="card.icon" [style.color]="card.color"></i>
+          </div>
+          <div class="card-info">
+            <span class="card-count">{{ card.count }}</span>
+            <span class="card-label">{{ card.label }}</span>
+          </div>
+        </div>
+      </p-card>
+    }
+  </div>
+}

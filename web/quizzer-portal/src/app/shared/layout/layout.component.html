@@ -1,0 +1,11 @@
+<div class="app-layout">
+  <app-sidebar [collapsed]="sidebarCollapsed()" />
+  <div class="app-main">
+    <app-topbar (toggleSidebar)="toggleSidebar()" />
+    <div class="app-content">
+      <router-outlet />
+    </div>
+  </div>
+</div>
+<p-toast />
+<p-confirmdialog />

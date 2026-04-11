@@ -1,0 +1,132 @@
+<div class="page-header">
+  <h2>Questions</h2>
+</div>
+
+<p-toolbar>
+  <ng-template #start>
+    <div class="toolbar-filters">
+      <p-select
+        [options]="questionSetOptions()"
+        [(ngModel)]="selectedSetId"
+        optionLabel="name"
+        optionValue="questionSetId"
+        placeholder="Filter by question set"
+        [showClear]="true"
+        (onChange)="onSetFilterChange()"
+        [style]="{ minWidth: '220px' }"
+      />
+    </div>
+  </ng-template>
+  <ng-template #end>
+    <p-iconfield>
+      <p-inputicon styleClass="pi pi-search" />
+      <input pInputText placeholder="Search questions..." [(ngModel)]="searchTerm" (input)="onSearch()" />
+    </p-iconfield>
+  </ng-template>
+</p-toolbar>
+
+<p-table
+  [value]="questions()"
+  [lazy]="true"
+  [paginator]="true"
+  [rows]="pageSize"
+  [totalRecords]="totalRecords()"
+  [loading]="loading()"
+  (onLazyLoad)="onLazyLoad($event)"
+  [rowHover]="true"
+  dataKey="questionId"
+  styleClass="p-datatable-sm"
+>
+  <ng-template #header>
+    <tr>
+      <th style="width: 3rem"></th>
+      <th>Question</th>
+      <th style="width: 8rem">Marks</th>
+      <th style="width: 8rem">Options</th>
+      <th style="width: 10rem">Actions</th>
+    </tr>
+  </ng-template>
+  <ng-template #body let-q let-expanded="expanded">
+    <tr>
+      <td>
+        <p-button
+          type="button"
+          [pRowToggler]="q"
+          [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
+          [text]="true"
+          [rounded]="true"
+          size="small"
+        />
+      </td>
+      <td>{{ truncate(q.question, 80) }}</td>
+      <td>{{ q.mark ?? 'N/A' }}</td>
+      <td>{{ q.questionOptions?.length ?? 0 }}</td>
+      <td>
+        <p-button icon="pi pi-pencil" [text]="true" [rounded]="true" severity="warn" (onClick)="editQuestion(q)" />
+        <p-button icon="pi pi-trash" [text]="true" [rounded]="true" severity="danger" (onClick)="confirmDelete(q)" />
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template #rowexpansion let-q>
+    <tr>
+      <td colspan="5">
+        <div class="expansion-content">
+          @if (q.details) {
+            <p class="question-details"><strong>Details:</strong> {{ q.details }}</p>
+          }
+          <h4>Options</h4>
+          <div class="options-list">
+            @for (opt of q.questionOptions; track opt.questionOptionId) {
+              <div class="option-item" [class.correct]="opt.isCorrect">
+                <i [class]="opt.isCorrect ? 'pi pi-check-circle' : 'pi pi-circle'"></i>
+                <span>{{ opt.optionText }}</span>
+                @if (opt.isCorrect) {
+                  <p-tag value="Correct" severity="success" />
+                }
+              </div>
+            } @empty {
+              <p class="text-muted">No options defined.</p>
+            }
+          </div>
+        </div>
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template #emptymessage>
+    <tr>
+      <td colspan="5" class="text-center p-4">No questions found.</td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<!-- Edit Question Dialog -->
+<p-dialog
+  header="Edit Question"
+  [(visible)]="displayDialog"
+  [modal]="true"
+  [style]="{ width: '550px' }"
+  [closable]="true"
+>
+  <form [formGroup]="questionForm" (ngSubmit)="saveQuestion()">
+    <div class="form-grid">
+      <div class="form-field">
+        <label for="editQText">Question</label>
+        <textarea id="editQText" pTextarea formControlName="question" rows="3" class="w-full"></textarea>
+      </div>
+      <div class="form-field">
+        <label for="editQDetails">Details</label>
+        <textarea id="editQDetails" pTextarea formControlName="details" rows="2" class="w-full"></textarea>
+      </div>
+      <div class="form-field">
+        <label for="editQMark">Marks</label>
+        <p-inputnumber id="editQMark" formControlName="mark" [min]="0" [showButtons]="true" class="w-full" />
+      </div>
+    </div>
+    <div class="dialog-actions">
+      <p-button label="Cancel" severity="secondary" [text]="true" (onClick)="displayDialog = false" />
+      <p-button label="Save" icon="pi pi-check" type="submit" [disabled]="questionForm.invalid" />
+    </div>
+  </form>
+</p-dialog>
+
+<p-confirmDialog />

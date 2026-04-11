@@ -1,0 +1,21 @@
+.form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-footer {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: 0.875rem;
+}
+
+.form-footer a {
+  color: var(--p-primary-color);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+:host ::ng-deep .p-card-body {
+  padding: 2rem;
+}

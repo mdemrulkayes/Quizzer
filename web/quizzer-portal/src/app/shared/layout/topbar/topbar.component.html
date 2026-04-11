@@ -1,0 +1,28 @@
+<div class="topbar">
+  <div class="topbar-left">
+    <p-button
+      icon="pi pi-bars"
+      [text]="true"
+      [rounded]="true"
+      severity="secondary"
+      (onClick)="toggleSidebar.emit()"
+    />
+  </div>
+  <div class="topbar-right">
+    <p-button
+      [icon]="isDarkMode() ? 'pi pi-sun' : 'pi pi-moon'"
+      [text]="true"
+      [rounded]="true"
+      severity="secondary"
+      (onClick)="toggleDarkMode()"
+    />
+    <p-button
+      [label]="userName()"
+      icon="pi pi-user"
+      [text]="true"
+      severity="secondary"
+      (onClick)="userMenu.toggle($event)"
+    />
+    <p-menu #userMenu [model]="userMenuItems" [popup]="true" />
+  </div>
+</div>

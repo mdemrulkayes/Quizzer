@@ -1,0 +1,17 @@
+<h2>My Profile</h2>
+@if (authService.currentUser(); as user) {
+  <p-card>
+    <div class="profile-info">
+      <div class="field"><label>Name</label><span>{{ user.firstName }} {{ user.lastName }}</span></div>
+      <div class="field"><label>Email</label><span>{{ user.email }}</span></div>
+      <div class="field">
+        <label>Roles</label>
+        <div class="roles">
+          @for (role of user.roles; track role) {
+            <p-tag [value]="role" severity="info" />
+          }
+        </div>
+      </div>
+    </div>
+  </p-card>
+}

@@ -1,0 +1,132 @@
+<div class="page-header">
+  <h2>User Management</h2>
+  <p-iconfield>
+    <p-inputicon styleClass="pi pi-search" />
+    <input pInputText placeholder="Search users..." [(ngModel)]="searchTerm" (input)="onSearch()" />
+  </p-iconfield>
+</div>
+
+<p-table
+  [value]="users()"
+  [lazy]="true"
+  [paginator]="true"
+  [rows]="pageSize"
+  [totalRecords]="totalRecords()"
+  [loading]="loading()"
+  (onLazyLoad)="onLazyLoad($event)"
+  [rowHover]="true"
+  styleClass="p-datatable-sm"
+>
+  <ng-template #header>
+    <tr>
+      <th>Name</th>
+      <th>Email</th>
+      <th>Roles</th>
+      <th>Created</th>
+      <th>Last Login</th>
+      <th style="width: 12rem">Actions</th>
+    </tr>
+  </ng-template>
+  <ng-template #body let-user>
+    <tr>
+      <td>{{ user.firstName }} {{ user.lastName }}</td>
+      <td>{{ user.email }}</td>
+      <td>
+        @for (role of user.roles; track role) {
+          <p-tag [value]="role" [severity]="getRoleSeverity(role)" styleClass="mr-1" />
+        }
+      </td>
+      <td>{{ user.createdDate | date:'mediumDate' }}</td>
+      <td>{{ user.lastLoginTime ? (user.lastLoginTime | date:'medium') : 'Never' }}</td>
+      <td>
+        <p-button icon="pi pi-eye" [text]="true" [rounded]="true" severity="info" (onClick)="viewUser(user)" />
+        @if (authService.isSuperAdmin) {
+          <p-button icon="pi pi-pencil" [text]="true" [rounded]="true" severity="warn" (onClick)="editRole(user)" />
+        }
+        <p-button icon="pi pi-trash" [text]="true" [rounded]="true" severity="danger" (onClick)="confirmDelete(user)" />
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template #emptymessage>
+    <tr>
+      <td colspan="6" class="text-center p-4">No users found.</td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<!-- User Detail Dialog -->
+<p-dialog
+  header="User Details"
+  [(visible)]="displayDetailDialog"
+  [modal]="true"
+  [style]="{ width: '480px' }"
+  [closable]="true"
+>
+  @if (selectedUser()) {
+    <div class="detail-grid">
+      <div class="detail-row">
+        <span class="detail-label">Name</span>
+        <span class="detail-value">{{ selectedUser()!.firstName }} {{ selectedUser()!.lastName }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Email</span>
+        <span class="detail-value">{{ selectedUser()!.email ?? '—' }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Phone</span>
+        <span class="detail-value">{{ selectedUser()!.phoneNumber ?? '—' }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Roles</span>
+        <span class="detail-value">
+          @for (role of selectedUser()!.roles; track role) {
+            <p-tag [value]="role" [severity]="getRoleSeverity(role)" styleClass="mr-1" />
+          }
+        </span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Status</span>
+        <span class="detail-value">
+          <p-tag [value]="selectedUser()!.isDeleted ? 'Deleted' : 'Active'" [severity]="selectedUser()!.isDeleted ? 'danger' : 'success'" />
+        </span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Created</span>
+        <span class="detail-value">{{ selectedUser()!.createdDate | date:'medium' }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Last Login</span>
+        <span class="detail-value">{{ selectedUser()!.lastLoginTime ? (selectedUser()!.lastLoginTime | date:'medium') : 'Never' }}</span>
+      </div>
+    </div>
+  }
+</p-dialog>
+
+<!-- Role Edit Dialog -->
+<p-dialog
+  header="Change User Role"
+  [(visible)]="displayRoleDialog"
+  [modal]="true"
+  [style]="{ width: '400px' }"
+  [closable]="true"
+>
+  @if (selectedUser()) {
+    <div class="role-edit-content">
+      <p>Changing role for <strong>{{ selectedUser()!.firstName }} {{ selectedUser()!.lastName }}</strong></p>
+      <p-select
+        [options]="roleOptions"
+        [(ngModel)]="selectedRole"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Select a role"
+        class="w-full"
+      />
+      <div class="role-edit-actions">
+        <p-button label="Cancel" severity="secondary" [text]="true" (onClick)="displayRoleDialog = false" />
+        <p-button label="Update Role" severity="warn" (onClick)="updateRole()" [disabled]="!selectedRole" />
+      </div>
+    </div>
+  }
+</p-dialog>
+
+<p-confirmDialog />

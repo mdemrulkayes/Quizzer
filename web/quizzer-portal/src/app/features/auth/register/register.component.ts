@@ -15,86 +15,8 @@ import { MessageService } from 'primeng/api';
   standalone: true,
   imports: [ReactiveFormsModule, RouterLink, Card, InputText, Password, Button, FloatLabel],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <p-card>
-      <form [formGroup]="form" (ngSubmit)="onSubmit()">
-        <div class="form-fields">
-          <div class="form-row">
-            <p-floatlabel variant="on">
-              <input pInputText id="firstName" formControlName="firstName" class="w-full" />
-              <label for="firstName">First Name</label>
-            </p-floatlabel>
-            <p-floatlabel variant="on">
-              <input pInputText id="lastName" formControlName="lastName" class="w-full" />
-              <label for="lastName">Last Name</label>
-            </p-floatlabel>
-          </div>
-          <p-floatlabel variant="on">
-            <input pInputText id="email" formControlName="email" class="w-full" />
-            <label for="email">Email</label>
-          </p-floatlabel>
-          <p-floatlabel variant="on">
-            <input pInputText id="phoneNumber" formControlName="phoneNumber" class="w-full" />
-            <label for="phoneNumber">Phone Number</label>
-          </p-floatlabel>
-          <p-floatlabel variant="on">
-            <p-password id="password" formControlName="password" [toggleMask]="true" styleClass="w-full" inputStyleClass="w-full" />
-            <label for="password">Password</label>
-          </p-floatlabel>
-          <p-floatlabel variant="on">
-            <p-password id="confirmPassword" formControlName="confirmPassword" [feedback]="false" [toggleMask]="true" styleClass="w-full" inputStyleClass="w-full" />
-            <label for="confirmPassword">Confirm Password</label>
-          </p-floatlabel>
-          @if (form.hasError('passwordMismatch')) {
-            <small class="p-error">Passwords do not match.</small>
-          }
-          @if (errorMessage()) {
-            <small class="p-error">{{ errorMessage() }}</small>
-          }
-          <p-button
-            type="submit"
-            label="Create Account"
-            icon="pi pi-user-plus"
-            [loading]="loading()"
-            [disabled]="form.invalid"
-            styleClass="w-full"
-          />
-        </div>
-        <div class="form-footer">
-          <span>Already have an account? <a routerLink="/auth/login">Sign In</a></span>
-        </div>
-      </form>
-    </p-card>
-  `,
-  styles: [`
-    .form-fields {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-    }
-
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-    }
-
-    .form-footer {
-      text-align: center;
-      margin-top: 1.5rem;
-      font-size: 0.875rem;
-    }
-
-    .form-footer a {
-      color: var(--p-primary-color);
-      text-decoration: none;
-      font-weight: 600;
-    }
-
-    :host ::ng-deep .p-card-body {
-      padding: 2rem;
-    }
-  `],
+  templateUrl: './register.component.html',
+  styleUrl: './register.component.scss',
 })
 export class RegisterComponent {
   private readonly fb = inject(FormBuilder);

@@ -14,59 +14,8 @@ import { FloatLabel } from 'primeng/floatlabel';
   standalone: true,
   imports: [ReactiveFormsModule, RouterLink, Card, InputText, Password, Button, FloatLabel],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <p-card>
-      <form [formGroup]="form" (ngSubmit)="onSubmit()">
-        <div class="form-fields">
-          <p-floatlabel variant="on">
-            <input pInputText id="email" formControlName="email" class="w-full" />
-            <label for="email">Email</label>
-          </p-floatlabel>
-          <p-floatlabel variant="on">
-            <p-password id="password" formControlName="password" [feedback]="false" [toggleMask]="true" styleClass="w-full" inputStyleClass="w-full" />
-            <label for="password">Password</label>
-          </p-floatlabel>
-          @if (errorMessage()) {
-            <small class="p-error">{{ errorMessage() }}</small>
-          }
-          <p-button
-            type="submit"
-            label="Sign In"
-            icon="pi pi-sign-in"
-            [loading]="loading()"
-            [disabled]="form.invalid"
-            styleClass="w-full"
-          />
-        </div>
-        <div class="form-footer">
-          <span>Don't have an account? <a routerLink="/auth/register">Register</a></span>
-        </div>
-      </form>
-    </p-card>
-  `,
-  styles: [`
-    .form-fields {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-    }
-
-    .form-footer {
-      text-align: center;
-      margin-top: 1.5rem;
-      font-size: 0.875rem;
-    }
-
-    .form-footer a {
-      color: var(--p-primary-color);
-      text-decoration: none;
-      font-weight: 600;
-    }
-
-    :host ::ng-deep .p-card-body {
-      padding: 2rem;
-    }
-  `],
+  templateUrl: './login.component.html',
+  styleUrl: './login.component.scss',
 })
 export class LoginComponent {
   private readonly fb = inject(FormBuilder);

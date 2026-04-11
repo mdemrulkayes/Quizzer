@@ -12,35 +12,8 @@ import { FloatLabel } from 'primeng/floatlabel';
   standalone: true,
   imports: [ReactiveFormsModule, Card, Password, Button, FloatLabel],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <h2>Change Password</h2>
-    <p-card styleClass="max-w-lg">
-      <form [formGroup]="form" (ngSubmit)="onSubmit()">
-        <div class="form-fields">
-          <p-floatlabel variant="on">
-            <p-password id="currentPassword" formControlName="currentPassword" [feedback]="false" [toggleMask]="true" styleClass="w-full" inputStyleClass="w-full" />
-            <label for="currentPassword">Current Password</label>
-          </p-floatlabel>
-          <p-floatlabel variant="on">
-            <p-password id="newPassword" formControlName="newPassword" [toggleMask]="true" styleClass="w-full" inputStyleClass="w-full" />
-            <label for="newPassword">New Password</label>
-          </p-floatlabel>
-          <p-floatlabel variant="on">
-            <p-password id="confirmNewPassword" formControlName="confirmNewPassword" [feedback]="false" [toggleMask]="true" styleClass="w-full" inputStyleClass="w-full" />
-            <label for="confirmNewPassword">Confirm New Password</label>
-          </p-floatlabel>
-          @if (form.hasError('passwordMismatch')) {
-            <small class="p-error">New passwords do not match.</small>
-          }
-          <p-button type="submit" label="Change Password" icon="pi pi-key" [loading]="loading()" [disabled]="form.invalid" />
-        </div>
-      </form>
-    </p-card>
-  `,
-  styles: [`
-    h2 { margin: 0 0 1rem; color: var(--p-text-color); }
-    .form-fields { display: flex; flex-direction: column; gap: 1.5rem; }
-  `],
+  templateUrl: './change-password.component.html',
+  styleUrl: './change-password.component.scss',
 })
 export class ChangePasswordComponent {
   private readonly fb = inject(FormBuilder);
