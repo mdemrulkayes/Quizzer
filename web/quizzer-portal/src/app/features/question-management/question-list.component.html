@@ -1,10 +1,10 @@
-<div class="page-header">
-  <h2>Questions</h2>
+<div class="flex justify-between items-center mb-6">
+  <h2 class="m-0 text-[var(--p-text-color)] text-2xl">Questions</h2>
 </div>
 
-<p-toolbar>
+<p-toolbar class="block mb-4">
   <ng-template #start>
-    <div class="toolbar-filters">
+    <div class="flex gap-3 items-center flex-wrap">
       <p-select
         [options]="questionSetOptions()"
         [(ngModel)]="selectedSetId"
@@ -70,22 +70,22 @@
   <ng-template #rowexpansion let-q>
     <tr>
       <td colspan="5">
-        <div class="expansion-content">
+        <div class="py-4 px-8">
           @if (q.details) {
-            <p class="question-details"><strong>Details:</strong> {{ q.details }}</p>
+            <p class="mb-2 text-[var(--p-text-muted-color)]"><strong>Details:</strong> {{ q.details }}</p>
           }
-          <h4>Options</h4>
-          <div class="options-list">
+          <h4 class="mt-3 mb-2 text-[var(--p-text-color)]">Options</h4>
+          <div class="flex flex-col gap-2">
             @for (opt of q.questionOptions; track opt.questionOptionId) {
-              <div class="option-item" [class.correct]="opt.isCorrect">
-                <i [class]="opt.isCorrect ? 'pi pi-check-circle' : 'pi pi-circle'"></i>
+              <div [class]="'flex items-center gap-2 py-2 px-3 rounded-[var(--p-border-radius)] ' + (opt.isCorrect ? 'bg-[var(--p-green-50)] text-[var(--p-green-700)]' : 'bg-[var(--p-surface-50)]')">
+                <i [class]="'text-base ' + (opt.isCorrect ? 'pi pi-check-circle' : 'pi pi-circle')"></i>
                 <span>{{ opt.optionText }}</span>
                 @if (opt.isCorrect) {
                   <p-tag value="Correct" severity="success" />
                 }
               </div>
             } @empty {
-              <p class="text-muted">No options defined.</p>
+              <p class="text-[var(--p-text-muted-color)]">No options defined.</p>
             }
           </div>
         </div>
@@ -108,21 +108,21 @@
   [closable]="true"
 >
   <form [formGroup]="questionForm" (ngSubmit)="saveQuestion()">
-    <div class="form-grid">
-      <div class="form-field">
-        <label for="editQText">Question</label>
+    <div class="flex flex-col gap-4">
+      <div class="flex flex-col gap-2">
+        <label for="editQText" class="font-semibold text-[var(--p-text-color)]">Question</label>
         <textarea id="editQText" pTextarea formControlName="question" rows="3" class="w-full"></textarea>
       </div>
-      <div class="form-field">
-        <label for="editQDetails">Details</label>
+      <div class="flex flex-col gap-2">
+        <label for="editQDetails" class="font-semibold text-[var(--p-text-color)]">Details</label>
         <textarea id="editQDetails" pTextarea formControlName="details" rows="2" class="w-full"></textarea>
       </div>
-      <div class="form-field">
-        <label for="editQMark">Marks</label>
+      <div class="flex flex-col gap-2">
+        <label for="editQMark" class="font-semibold text-[var(--p-text-color)]">Marks</label>
         <p-inputnumber id="editQMark" formControlName="mark" [min]="0" [showButtons]="true" class="w-full" />
       </div>
     </div>
-    <div class="dialog-actions">
+    <div class="flex justify-end gap-2 mt-6">
       <p-button label="Cancel" severity="secondary" [text]="true" (onClick)="displayDialog = false" />
       <p-button label="Save" icon="pi pi-check" type="submit" [disabled]="questionForm.invalid" />
     </div>

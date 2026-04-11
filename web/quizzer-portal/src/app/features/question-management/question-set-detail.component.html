@@ -1,34 +1,34 @@
-<div class="page-header">
-  <h2>Question Set Detail</h2>
+<div class="flex justify-between items-center mb-6">
+  <h2 class="m-0 text-[var(--p-text-color)] text-2xl">Question Set Detail</h2>
   <p-button label="Back to List" icon="pi pi-arrow-left" [text]="true" (onClick)="goBack()" />
 </div>
 
 @if (loading()) {
   <p>Loading...</p>
 } @else if (questionSet()) {
-  <div class="set-info-card">
-    <h3>{{ questionSet()!.name }}</h3>
+  <div class="bg-[var(--p-surface-0)] border border-[var(--p-surface-200)] rounded-[var(--p-border-radius)] p-6 mb-6">
+    <h3 class="mt-0 mb-2 text-[var(--p-text-color)]">{{ questionSet()!.name }}</h3>
     @if (questionSet()!.setCode) {
-      <p><strong>Code:</strong> {{ questionSet()!.setCode }}</p>
+      <p class="my-1 text-[var(--p-text-muted-color)]"><strong>Code:</strong> {{ questionSet()!.setCode }}</p>
     }
     @if (questionSet()!.details) {
-      <p>{{ questionSet()!.details }}</p>
+      <p class="my-1 text-[var(--p-text-muted-color)]">{{ questionSet()!.details }}</p>
     }
   </div>
 
   <!-- Tags Section -->
-  <div class="section-card">
-    <div class="section-header">
-      <h3>Tags</h3>
+  <div class="bg-[var(--p-surface-0)] border border-[var(--p-surface-200)] rounded-[var(--p-border-radius)] p-6 mb-6">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="m-0 text-[var(--p-text-color)]">Tags</h3>
     </div>
-    <div class="tags-list">
+    <div class="flex flex-wrap gap-2 mb-4">
       @for (tag of tags(); track tag.tagId) {
         <p-chip [label]="tag.name" [removable]="true" (onRemove)="removeTag(tag)" />
       } @empty {
-        <span class="text-muted">No tags assigned.</span>
+        <span class="text-[var(--p-text-muted-color)]">No tags assigned.</span>
       }
     </div>
-    <div class="add-tag-row">
+    <div class="flex gap-2 items-center">
       <p-select
         [options]="availableTags()"
         [(ngModel)]="selectedTagId"
@@ -42,48 +42,48 @@
   </div>
 
   <!-- Questions Section -->
-  <div class="section-card">
-    <div class="section-header">
-      <h3>Questions ({{ questionSet()!.questions.length }})</h3>
+  <div class="bg-[var(--p-surface-0)] border border-[var(--p-surface-200)] rounded-[var(--p-border-radius)] p-6 mb-6">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="m-0 text-[var(--p-text-color)]">Questions ({{ questionSet()!.questions.length }})</h3>
       <p-button label="Add Question" icon="pi pi-plus" (onClick)="openNewQuestion()" />
     </div>
-    <div class="questions-list">
+    <div class="flex flex-col gap-4">
       @for (q of questionSet()!.questions; track q.questionId; let i = $index) {
         <p-panel
           [header]="'Q' + (i + 1) + ': ' + truncate(q.question, 80)"
           [toggleable]="true"
           [collapsed]="true"
         >
-          <div class="question-content">
-            <div class="question-meta">
-              <p><strong>Question:</strong> {{ q.question }}</p>
+          <div class="flex flex-col gap-3">
+            <div>
+              <p class="my-1"><strong>Question:</strong> {{ q.question }}</p>
               @if (q.details) {
-                <p><strong>Details:</strong> {{ q.details }}</p>
+                <p class="my-1"><strong>Details:</strong> {{ q.details }}</p>
               }
-              <p><strong>Marks:</strong> {{ q.mark ?? 'N/A' }}</p>
+              <p class="my-1"><strong>Marks:</strong> {{ q.mark ?? 'N/A' }}</p>
             </div>
-            <h4>Options</h4>
-            <div class="options-list">
+            <h4 class="mt-2 mb-1 text-[var(--p-text-color)]">Options</h4>
+            <div class="flex flex-col gap-2">
               @for (opt of q.questionOptions; track opt.questionOptionId) {
-                <div class="option-item" [class.correct]="opt.isCorrect">
-                  <i [class]="opt.isCorrect ? 'pi pi-check-circle' : 'pi pi-circle'"></i>
+                <div [class]="'flex items-center gap-2 py-2 px-3 rounded-[var(--p-border-radius)] ' + (opt.isCorrect ? 'bg-[var(--p-green-50)] text-[var(--p-green-700)]' : 'bg-[var(--p-surface-50)]')">
+                  <i [class]="'text-base ' + (opt.isCorrect ? 'pi pi-check-circle' : 'pi pi-circle')"></i>
                   <span>{{ opt.optionText }}</span>
                   @if (opt.isCorrect) {
                     <p-tag value="Correct" severity="success" />
                   }
                 </div>
               } @empty {
-                <p class="text-muted">No options defined.</p>
+                <p class="text-[var(--p-text-muted-color)]">No options defined.</p>
               }
             </div>
-            <div class="question-actions">
+            <div class="flex gap-2 border-t border-[var(--p-surface-200)] pt-3 mt-1">
               <p-button icon="pi pi-pencil" label="Edit" severity="warn" [text]="true" (onClick)="editQuestion(q)" />
               <p-button icon="pi pi-trash" label="Delete" severity="danger" [text]="true" (onClick)="confirmDeleteQuestion(q)" />
             </div>
           </div>
         </p-panel>
       } @empty {
-        <p class="text-muted">No questions yet. Click "Add Question" to get started.</p>
+        <p class="text-[var(--p-text-muted-color)]">No questions yet. Click "Add Question" to get started.</p>
       }
     </div>
   </div>
@@ -98,28 +98,28 @@
   [closable]="true"
 >
   <form [formGroup]="questionForm" (ngSubmit)="saveQuestion()">
-    <div class="form-grid">
-      <div class="form-field">
-        <label for="qText">Question</label>
+    <div class="flex flex-col gap-4">
+      <div class="flex flex-col gap-2">
+        <label for="qText" class="font-semibold text-[var(--p-text-color)]">Question</label>
         <textarea id="qText" pTextarea formControlName="question" rows="3" class="w-full"></textarea>
       </div>
-      <div class="form-field">
-        <label for="qDetails">Details</label>
+      <div class="flex flex-col gap-2">
+        <label for="qDetails" class="font-semibold text-[var(--p-text-color)]">Details</label>
         <textarea id="qDetails" pTextarea formControlName="details" rows="2" class="w-full"></textarea>
       </div>
-      <div class="form-field">
-        <label for="qMark">Marks</label>
+      <div class="flex flex-col gap-2">
+        <label for="qMark" class="font-semibold text-[var(--p-text-color)]">Marks</label>
         <p-inputnumber id="qMark" formControlName="mark" [min]="0" [showButtons]="true" class="w-full" />
       </div>
 
-      <div class="options-section">
-        <div class="options-header">
-          <label>Options (select the correct answer)</label>
+      <div class="flex flex-col gap-3">
+        <div class="flex justify-between items-center">
+          <label class="font-semibold text-[var(--p-text-color)]">Options (select the correct answer)</label>
           <p-button label="Add Option" icon="pi pi-plus" [text]="true" size="small" (onClick)="addOption()" />
         </div>
         <div formArrayName="options">
           @for (option of optionsFormArray.controls; track $index; let i = $index) {
-            <div class="option-row" [formGroupName]="i">
+            <div class="flex items-center gap-2" [formGroupName]="i">
               <p-radiobutton
                 name="correctAnswer"
                 [value]="i"
@@ -127,7 +127,7 @@
                 [ngModelOptions]="{ standalone: true }"
                 [inputId]="'answer_' + i"
               />
-              <input pInputText formControlName="optionText" placeholder="Option text" class="option-text-input" />
+              <input pInputText formControlName="optionText" placeholder="Option text" class="flex-1 min-w-0" />
               <p-button
                 icon="pi pi-trash"
                 [text]="true"
@@ -141,7 +141,7 @@
         </div>
       </div>
     </div>
-    <div class="dialog-actions">
+    <div class="flex justify-end gap-2 mt-6">
       <p-button label="Cancel" severity="secondary" [text]="true" (onClick)="displayQuestionDialog = false" />
       <p-button
         label="Save"

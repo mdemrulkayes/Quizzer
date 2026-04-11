@@ -1,8 +1,8 @@
-<div class="app-layout">
+<div class="flex min-h-screen">
   <app-sidebar [collapsed]="sidebarCollapsed()" />
-  <div class="app-main">
+  <div class="flex-1 flex flex-col min-w-0">
     <app-topbar (toggleSidebar)="toggleSidebar()" />
-    <div class="app-content">
+    <div class="flex-1 p-6 bg-[var(--p-surface-50)] overflow-y-auto">
       <router-outlet />
     </div>
   </div>

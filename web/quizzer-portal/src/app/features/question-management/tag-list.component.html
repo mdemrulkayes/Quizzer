@@ -1,8 +1,8 @@
-<div class="page-header">
-  <h2>Tags</h2>
+<div class="flex justify-between items-center mb-6">
+  <h2 class="m-0 text-[var(--p-text-color)] text-2xl">Tags</h2>
 </div>
 
-<p-toolbar>
+<p-toolbar class="block mb-4">
   <ng-template #start>
     <p-button label="New Tag" icon="pi pi-plus" (onClick)="openNew()" />
   </ng-template>
@@ -57,17 +57,17 @@
   [closable]="true"
 >
   <form [formGroup]="tagForm" (ngSubmit)="saveTag()">
-    <div class="form-grid">
-      <div class="form-field">
-        <label for="tagName">Name</label>
+    <div class="flex flex-col gap-4">
+      <div class="flex flex-col gap-2">
+        <label for="tagName" class="font-semibold text-[var(--p-text-color)]">Name</label>
         <input id="tagName" pInputText formControlName="name" class="w-full" />
       </div>
-      <div class="form-field">
-        <label for="tagDesc">Description</label>
+      <div class="flex flex-col gap-2">
+        <label for="tagDesc" class="font-semibold text-[var(--p-text-color)]">Description</label>
         <textarea id="tagDesc" pTextarea formControlName="description" rows="3" class="w-full"></textarea>
       </div>
     </div>
-    <div class="dialog-actions">
+    <div class="flex justify-end gap-2 mt-6">
       <p-button label="Cancel" severity="secondary" [text]="true" (onClick)="displayDialog = false" />
       <p-button label="Save" icon="pi pi-check" type="submit" [disabled]="tagForm.invalid" />
     </div>

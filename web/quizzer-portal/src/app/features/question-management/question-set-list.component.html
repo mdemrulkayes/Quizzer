@@ -1,13 +1,13 @@
-<div class="page-header">
-  <h2>Question Sets</h2>
+<div class="flex justify-between items-center mb-6">
+  <h2 class="m-0 text-[var(--p-text-color)] text-2xl">Question Sets</h2>
 </div>
 
-<p-toolbar>
+<p-toolbar class="block mb-4">
   <ng-template #start>
     <p-button label="New Question Set" icon="pi pi-plus" (onClick)="openNew()" />
   </ng-template>
   <ng-template #end>
-    <div class="toolbar-filters">
+    <div class="flex gap-3 items-center flex-wrap">
       <p-select
         [options]="tagOptions()"
         [(ngModel)]="selectedTagId"
@@ -74,21 +74,21 @@
   [closable]="true"
 >
   <form [formGroup]="setForm" (ngSubmit)="saveSet()">
-    <div class="form-grid">
-      <div class="form-field">
-        <label for="setName">Name</label>
+    <div class="flex flex-col gap-4">
+      <div class="flex flex-col gap-2">
+        <label for="setName" class="font-semibold text-[var(--p-text-color)]">Name</label>
         <input id="setName" pInputText formControlName="name" class="w-full" />
       </div>
-      <div class="form-field">
-        <label for="setCode">Set Code</label>
+      <div class="flex flex-col gap-2">
+        <label for="setCode" class="font-semibold text-[var(--p-text-color)]">Set Code</label>
         <input id="setCode" pInputText formControlName="setCode" class="w-full" />
       </div>
-      <div class="form-field">
-        <label for="setDetails">Details</label>
+      <div class="flex flex-col gap-2">
+        <label for="setDetails" class="font-semibold text-[var(--p-text-color)]">Details</label>
         <textarea id="setDetails" pTextarea formControlName="details" rows="3" class="w-full"></textarea>
       </div>
     </div>
-    <div class="dialog-actions">
+    <div class="flex justify-end gap-2 mt-6">
       <p-button label="Cancel" severity="secondary" [text]="true" (onClick)="displayDialog = false" />
       <p-button label="Save" icon="pi pi-check" type="submit" [disabled]="setForm.invalid" />
     </div>

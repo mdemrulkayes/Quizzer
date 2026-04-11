@@ -23,7 +23,7 @@
   </ng-template>
 
   <ng-template #body let-exam>
-    <tr (click)="viewResult(exam)" style="cursor: pointer;">
+    <tr (click)="viewResult(exam)" class="cursor-pointer">
       <td>{{ exam.examTitle }}</td>
       <td>{{ exam.startedAt | date: 'medium' }}</td>
       <td>{{ exam.submittedAt ? (exam.submittedAt | date: 'medium') : '-' }}</td>
@@ -45,7 +45,7 @@
 
   <ng-template #emptymessage>
     <tr>
-      <td colspan="6" style="text-align: center;">No results found.</td>
+      <td colspan="6" class="text-center">No results found.</td>
     </tr>
   </ng-template>
 </p-table>

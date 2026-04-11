@@ -1,4 +1,5 @@
 import { Component, ChangeDetectionStrategy, computed, inject, input, output } from '@angular/core';
+import { NgClass } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
 import { UserRole } from '../../../core/models';
@@ -7,7 +8,7 @@ import { MenuItem } from 'primeng/api';
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive],
+  imports: [NgClass, RouterLink, RouterLinkActive],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss',
