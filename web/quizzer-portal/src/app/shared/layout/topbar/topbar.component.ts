@@ -18,8 +18,6 @@ export class TopbarComponent {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 
-  readonly isDarkMode = signal(localStorage.getItem('darkMode') === 'true');
-
   readonly userName = signal('');
 
   readonly userMenuItems: MenuItem[] = [
@@ -30,25 +28,9 @@ export class TopbarComponent {
   ];
 
   constructor() {
-    // Apply dark mode on init
-    if (this.isDarkMode()) {
-      document.documentElement.classList.add('dark-mode');
-    }
-    // Update username reactively
     const user = this.authService.currentUser();
     if (user) {
       this.userName.set(`${user.firstName} ${user.lastName}`);
-    }
-  }
-
-  toggleDarkMode(): void {
-    const newValue = !this.isDarkMode();
-    this.isDarkMode.set(newValue);
-    localStorage.setItem('darkMode', String(newValue));
-    if (newValue) {
-      document.documentElement.classList.add('dark-mode');
-    } else {
-      document.documentElement.classList.remove('dark-mode');
     }
   }
 }
