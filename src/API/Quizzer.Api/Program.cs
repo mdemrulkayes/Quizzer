@@ -1,5 +1,7 @@
 using System.Reflection;
 using Elastic.Serilog.Sinks;
+using Modules.Exam.Endpoints;
+using Modules.Exam.Infrastructure;
 using Modules.Identity;
 using Modules.Quiz.Endpoints;
 using Modules.Quiz.Infrastructure;
@@ -44,6 +46,7 @@ try
     builder.Services.RegisterSharedInfrastructureModule();
     builder.Services.RegisterIdentityModule(builder.Configuration, logger, mediatRAssemblies);
     builder.Services.RegisterQuestionModule(builder.Configuration, logger, mediatRAssemblies);
+    builder.Services.RegisterExamEndpointsModule(builder.Configuration, logger, mediatRAssemblies);
 
     #endregion
 
@@ -61,6 +64,9 @@ try
     // Register OpenAPI documentation with Scalar UI
     builder.Services.AddOpenApiDocumentation();
 
+    // Register health checks
+    builder.Services.AddHealthCheckServices();
+
     var app = builder.Build();
 
     // Configure the HTTP request pipeline.
@@ -75,6 +81,7 @@ try
 
     app.MigrateIdentityModuleDatabase(logger: logger);
     app.MigrateQuestionModuleDatabase();
+    app.MigrateExamModuleDatabase();
 
     #endregion
 
@@ -85,6 +92,7 @@ try
     app.UseAuthorization();
 
     app.MapEndpoints();
+    app.MapHealthCheckEndpoints();
 
     app.Run();
 }

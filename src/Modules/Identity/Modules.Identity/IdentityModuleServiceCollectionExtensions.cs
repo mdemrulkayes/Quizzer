@@ -103,7 +103,23 @@ public static class ServiceCollectionExtensions
             };
         });
 
-        services.AddAuthorization();
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy(AuthorizationPolicyConstants.SuperAdminPolicy, policy =>
+                policy.RequireRole(RoleConstants.SuperAdmin));
+
+            options.AddPolicy(AuthorizationPolicyConstants.AdminPolicy, policy =>
+                policy.RequireRole(RoleConstants.SuperAdmin, RoleConstants.SupportAdmin));
+
+            options.AddPolicy(AuthorizationPolicyConstants.QuizAuthorPolicy, policy =>
+                policy.RequireRole(RoleConstants.SuperAdmin, RoleConstants.SupportAdmin, RoleConstants.QuizAuthor));
+
+            options.AddPolicy(AuthorizationPolicyConstants.ExaminePolicy, policy =>
+                policy.RequireRole(RoleConstants.Examine));
+
+            options.AddPolicy(AuthorizationPolicyConstants.AuthenticatedPolicy, policy =>
+                policy.RequireAuthenticatedUser());
+        });
 
         services.AddIdentityCore<ApplicationUser>(
             opt =>

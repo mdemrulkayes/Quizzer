@@ -6,11 +6,18 @@ internal struct IdentityModuleConstants
         internal const string Register = "/api/identity/register";
         internal const string Login = "/api/identity/login";
         internal static string Profile = "/api/identity/profile";
+        internal const string RefreshToken = "/api/identity/refresh-token";
+        internal const string ChangePassword = "/api/identity/change-password";
+        internal const string GetAllUsers = "/api/identity/users";
+        internal const string GetUserById = "/api/identity/users/{userId}";
+        internal const string UpdateUserRole = "/api/identity/users/{userId}/role";
+        internal const string DeleteUser = "/api/identity/users/{userId}";
     }
 
     internal struct RouteTag
     {
         internal const string IdentityTagName = "Identity";
+        internal const string UserManagementTagName = "User Management";
     }
 
     internal struct Role

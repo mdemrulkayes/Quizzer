@@ -15,11 +15,13 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" />
     <PackageReference Include="Newtonsoft.Json" />
     <PackageReference Include="Scalar.AspNetCore" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Modules\Identity\Modules.Identity\Modules.Identity.csproj" />
     <ProjectReference Include="..\..\Modules\Quiz\Modules.Quiz.Endpoints\Modules.Quiz.Endpoints.csproj" />
+    <ProjectReference Include="..\..\Modules\Exam\Modules.Exam.Endpoints\Modules.Exam.Endpoints.csproj" />
   </ItemGroup>
 </Project>

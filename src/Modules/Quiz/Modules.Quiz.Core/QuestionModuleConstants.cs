@@ -22,6 +22,9 @@ public struct QuestionModuleConstants
             public const string CreateQuestionSet = "/api/question/questionSet";
             public const string UpdateQuestionSet = "/api/question/questionSet/{setId}";
             public const string DeleteQuestionSet = "/api/question/questionSet/{setId}";
+            public const string GetQuestionSetTags = "/api/question/questionSet/{setId}/tags";
+            public const string AssignTagToQuestionSet = "/api/question/questionSet/{setId}/tags";
+            public const string RemoveTagFromQuestionSet = "/api/question/questionSet/{setId}/tags/{tagId}";
         }
 
         public struct QuestionRoute
@@ -31,6 +34,9 @@ public struct QuestionModuleConstants
             public const string CreateQuestion = "/api/question";
             public const string UpdateQuestion = "/api/question/{questionId}";
             public const string DeleteQuestion = "/api/question/{questionId}";
+            public const string AddOption = "/api/question/{questionId}/options";
+            public const string UpdateOption = "/api/question/{questionId}/options/{optionId}";
+            public const string DeleteOption = "/api/question/{questionId}/options/{optionId}";
         }
     }
 

@@ -1,5 +1,4 @@
 ﻿using Modules.Quiz.Core.QuestionAggregate;
-using Modules.Quiz.Core.Tag;
 using Shared.Core;
 
 namespace Modules.Quiz.Application.Question.QuestionSet.Delete;
@@ -11,10 +10,11 @@ internal sealed class DeleteQuestionSetCommandHandler(IQuestionSetRepository rep
 
         if (questionSet == null)
         {
-            return TagErrors.TagNotFound;
+            return QuestionErrors.QuestionSetNotFound;
         }
 
-        repository.Delete(questionSet);
+        questionSet.Delete();
+        repository.Update(questionSet);
         await unitOfWork.CommitAsync(cancellationToken);
 
         return true;

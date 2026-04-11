@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Modules.Identity.Constants;
 using Modules.Quiz.Application.Question.QuestionSet.Create;
 using Modules.Quiz.Application.Question.QuestionSet.Delete;
 using Modules.Quiz.Application.Question.QuestionSet.Dtos;
@@ -22,31 +23,31 @@ internal class QuestionSetEndpoints : IBaseEndpoint
             .Produces((int)HttpStatusCode.OK, typeof(PagedListDto<QuestionSetResponse>))
             .ProducesValidationProblem()
             .WithTags(QuestionModuleConstants.RouteTag.QuestionSetTag)
-            .RequireAuthorization();
+            .RequireAuthorization(AuthorizationPolicyConstants.AuthenticatedPolicy);
 
         routeBuilder.MapGet(QuestionModuleConstants.Route.QuestionSetRoute.GetQuestionSetDetailsById, GetQuestionSetDetailsById)
             .Produces((int)HttpStatusCode.OK, typeof(QuestionSetResponse))
             .ProducesValidationProblem()
             .WithTags(QuestionModuleConstants.RouteTag.QuestionSetTag)
-            .RequireAuthorization();
+            .RequireAuthorization(AuthorizationPolicyConstants.AuthenticatedPolicy);
 
         routeBuilder.MapPost(QuestionModuleConstants.Route.QuestionSetRoute.CreateQuestionSet, CreateQuestionSet)
             .Produces((int)HttpStatusCode.OK, typeof(QuestionSetResponse))
             .ProducesValidationProblem()
             .WithTags(QuestionModuleConstants.RouteTag.QuestionSetTag)
-            .RequireAuthorization();
+            .RequireAuthorization(AuthorizationPolicyConstants.QuizAuthorPolicy);
 
         routeBuilder.MapPut(QuestionModuleConstants.Route.QuestionSetRoute.UpdateQuestionSet, UpdateQuestionSet)
             .Produces((int)HttpStatusCode.OK, typeof(QuestionSetResponse))
             .ProducesValidationProblem()
             .WithTags(QuestionModuleConstants.RouteTag.QuestionSetTag)
-            .RequireAuthorization();
+            .RequireAuthorization(AuthorizationPolicyConstants.QuizAuthorPolicy);
 
         routeBuilder.MapDelete(QuestionModuleConstants.Route.QuestionSetRoute.DeleteQuestionSet, DeleteQuestionSet)
             .Produces((int)HttpStatusCode.OK, typeof(bool))
             .ProducesValidationProblem()
             .WithTags(QuestionModuleConstants.RouteTag.QuestionSetTag)
-            .RequireAuthorization();
+            .RequireAuthorization(AuthorizationPolicyConstants.QuizAuthorPolicy);
     }
 
     private async Task<IResult> GetAllQuestionSets(ISender sender, [AsParameters] GetAllQuestionSetQuery query)

@@ -4,4 +4,8 @@ using Shared.Core;
 
 namespace Modules.Quiz.Application.Tag.Query;
 
-public sealed record GetAllTagQuery : QueryStringParameter, IQuery<Result<PagedListDto<TagResponse>>>;
+public sealed record GetAllTagQuery(
+    string? SearchName = null,
+    int PageNumber = 1,
+    int PageSize = 10)
+    : QueryStringParameter(PageNumber, PageSize), IQuery<Result<PagedListDto<TagResponse>>>;

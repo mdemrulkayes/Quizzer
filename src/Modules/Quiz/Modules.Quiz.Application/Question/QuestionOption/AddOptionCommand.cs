@@ -1,0 +1,27 @@
+﻿using Modules.Quiz.Application.Question.Question.Dtos;
+using Modules.Quiz.Core.QuestionAggregate;
+using Shared.Core;
+
+namespace Modules.Quiz.Application.Question.QuestionOption;
+
+public sealed record AddOptionCommand(long QuestionId, string OptionText, bool IsAnswer) : ICommand<Result<QuestionOptionResponse>>;
+
+internal sealed class AddOptionCommandHandler(
+    IQuestionRepository questionRepository,
+    IUnitOfWork unitOfWork)
+    : ICommandHandler<AddOptionCommand, Result<QuestionOptionResponse>>
+{
+    public async Task<Result<QuestionOptionResponse>> Handle(AddOptionCommand request, CancellationToken cancellationToken)
+    {
+        var question = await questionRepository.GetByIdWithOptionsAsync(request.QuestionId);
+        if (question is null)
+            return QuestionErrors.QuestionNotFound;
+
+        question.AddQuestionOptions(request.OptionText, request.IsAnswer);
+        questionRepository.Update(question);
+        await unitOfWork.CommitAsync(cancellationToken);
+
+        var addedOption = question.Options.Last();
+        return new QuestionOptionResponse(addedOption.QuestionOptionId, addedOption.OptionText, addedOption.IsAnswer);
+    }
+}
