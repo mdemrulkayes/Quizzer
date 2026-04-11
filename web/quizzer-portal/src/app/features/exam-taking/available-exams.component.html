@@ -34,6 +34,7 @@
     <p-paginator
       [rows]="pageSize()"
       [totalRecords]="totalRecords()"
+      [rowsPerPageOptions]="[5, 10, 25]"
       [first]="first()"
       (onPageChange)="onPageChange($event)"
     />

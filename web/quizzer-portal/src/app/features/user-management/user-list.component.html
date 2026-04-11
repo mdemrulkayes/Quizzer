@@ -12,6 +12,7 @@
   [paginator]="true"
   [rows]="pageSize"
   [totalRecords]="totalRecords()"
+  [rowsPerPageOptions]="[5, 10, 25]"
   [loading]="loading()"
   (onLazyLoad)="onLazyLoad($event)"
   [rowHover]="true"
