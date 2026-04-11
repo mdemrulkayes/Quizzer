@@ -6,6 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Modules.Exam.Infrastructure.Persistence;
 using Modules.Identity.Persistence;
 using Modules.Quiz.Infrastructure.Data;
+using Shared.Core.Caching;
+using StackExchange.Redis;
 using Testcontainers.MsSql;
 
 namespace Quizzer.Api.FunctionalTest.Abstraction;
@@ -58,6 +60,17 @@ public class QuizzerWebApiFactory : WebApplicationFactory<Program>, IAsyncLifeti
             {
                 opt.UseSqlServer(cs);
             });
+
+            // Replace Redis cache with in-memory no-op for test isolation
+            var cacheDescriptors = services
+                .Where(s => s.ServiceType == typeof(ICacheService)
+                    || s.ServiceType == typeof(IConnectionMultiplexer))
+                .ToList();
+            foreach (var d in cacheDescriptors)
+                services.Remove(d);
+
+            services.AddSingleton<ICacheService, NoOpCacheService>();
+            services.AddDistributedMemoryCache();
         });
     }
 

@@ -4,6 +4,9 @@ using System.Net.Http.Json;
 using FluentAssertions;
 using Modules.Identity.Constants;
 using Modules.Identity.Features.Login;
+using Modules.Quiz.Application.Question.QuestionSet.Create;
+using Modules.Quiz.Application.Question.QuestionSet.Dtos;
+using Modules.Quiz.Application.Tag.Create;
 using Modules.Quiz.Application.Tag.Dtos;
 using Modules.Quiz.Core;
 using Modules.Quiz.Endpoints.QuestionSetTag;
@@ -35,29 +38,28 @@ public class QuestionSetTagEndpointTest : QuizzerBaseFunctionTest
         // Arrange: Create a tag
         var createTagResponse = await HttpClient.PostAsJsonAsync(
             QuestionModuleConstants.Route.TagRoute.CreateTag,
-            new { Name = "TestTag", Description = "A test tag for assignment." });
+            new CreateTagCommand("TestTag", "A test tag for assignment."));
         createTagResponse.StatusCode.Should().Be(HttpStatusCode.OK);
         var tag = await createTagResponse.Content.ReadFromJsonAsync<TagResponse>();
 
-        // Create a question set
+        // Create a question set with proper command type
         var createSetResponse = await HttpClient.PostAsJsonAsync(
             QuestionModuleConstants.Route.QuestionSetRoute.CreateQuestionSet,
-            new { Name = "TestSet", SetCode = "TS01", Details = "Test question set" });
+            new CreateQuestionSetCommand("TestSetForTag", "TS01", "Test question set", []));
         createSetResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        var questionSet = await createSetResponse.Content.ReadFromJsonAsync<QuestionSetResponse>();
+        questionSet.Should().NotBeNull();
 
-        // Get the set ID from response
-        var setResponse = await createSetResponse.Content.ReadAsStringAsync();
-
-        // Act: Assign tag to question set (using setId=1 since it's the first one)
+        // Act: Assign tag to question set using actual set ID
         var assignResponse = await HttpClient.PostAsJsonAsync(
-            "/api/question/questionSet/1/tags",
+            $"/api/question/questionSet/{questionSet!.QuestionSetId}/tags",
             new AssignTagRequest(tag!.TagId));
 
         // Assert
         assignResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
         // Act: Get tags for question set
-        var getTagsResponse = await HttpClient.GetAsync("/api/question/questionSet/1/tags");
+        var getTagsResponse = await HttpClient.GetAsync($"/api/question/questionSet/{questionSet.QuestionSetId}/tags");
 
         // Assert
         getTagsResponse.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -72,7 +74,7 @@ public class QuestionSetTagEndpointTest : QuizzerBaseFunctionTest
         // Arrange: Create a tag first
         var createTagResponse = await HttpClient.PostAsJsonAsync(
             QuestionModuleConstants.Route.TagRoute.CreateTag,
-            new { Name = "OrphanTag", Description = "Tag with no question set." });
+            new CreateTagCommand("OrphanTag", "Tag with no question set."));
         var tag = await createTagResponse.Content.ReadFromJsonAsync<TagResponse>();
 
         // Act

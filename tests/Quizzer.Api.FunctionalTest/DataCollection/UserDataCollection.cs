@@ -18,6 +18,8 @@ internal class UserDataCollection : IEnumerable<object[]>
 internal class UserEmailDataCollection : IEnumerable<object[]>
 {
     public const string Test1Email = "test1@gmail.com";
+    public const string Test2Email = "test2@gmail.com";
+    public const string Test3Email = "test3@gmail.com";
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
 

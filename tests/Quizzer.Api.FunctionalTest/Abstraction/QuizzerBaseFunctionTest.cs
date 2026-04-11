@@ -1,10 +1,12 @@
 ﻿using Bogus;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Modules.Identity.Constants;
 using Modules.Identity.Entities;
 using Modules.Identity.Features.Login;
 using Modules.Identity.Features.Registration;
+using Modules.Identity.Persistence;
 using Modules.Quiz.Infrastructure.Data;
 using Quizzer.Api.FunctionalTest.DataCollection;
 using Shared.Core;
@@ -15,6 +17,7 @@ namespace Quizzer.Api.FunctionalTest.Abstraction;
 public class QuizzerBaseFunctionTest
     : IClassFixture<QuizzerWebApiFactory>, IDisposable
 {
+    private readonly QuizzerWebApiFactory _factory;
     private readonly IServiceScope _scope;
     protected readonly HttpClient HttpClient;
     protected readonly UserManager<ApplicationUser> UserManager;
@@ -24,6 +27,7 @@ public class QuizzerBaseFunctionTest
 
     public QuizzerBaseFunctionTest(QuizzerWebApiFactory factory)
     {
+        _factory = factory;
         _scope = factory.Services.CreateScope();
         HttpClient = factory.CreateClient();
         UserManager = _scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
@@ -37,6 +41,27 @@ public class QuizzerBaseFunctionTest
         {
             await HttpClient.PostAsJsonAsync(IdentityModuleConstants.Route.Register, registrationCommand);
         }
+
+        // Promote test2 to QuizAuthor role using raw SQL to avoid EF tracking/PK issues
+        using var roleScope = _factory.Services.CreateScope();
+        var identityDb = roleScope.ServiceProvider.GetRequiredService<IdentityModuleDbContext>();
+        await identityDb.Database.ExecuteSqlRawAsync(@"
+            DELETE ur FROM [Identity].[UserRoles] ur
+            INNER JOIN [Identity].[Users] u ON ur.UserId = u.Id
+            INNER JOIN [Identity].[Roles] r ON ur.RoleId = r.Id
+            WHERE u.NormalizedEmail = 'TEST2@GMAIL.COM' AND r.NormalizedName = 'EXAMINE';
+
+            INSERT INTO [Identity].[UserRoles] (UserId, RoleId)
+            SELECT u.Id, r.Id
+            FROM [Identity].[Users] u
+            CROSS JOIN [Identity].[Roles] r
+            WHERE u.NormalizedEmail = 'TEST2@GMAIL.COM'
+            AND r.NormalizedName = 'QUIZAUTHOR'
+            AND NOT EXISTS (
+                SELECT 1 FROM [Identity].[UserRoles] ur2
+                WHERE ur2.UserId = u.Id AND ur2.RoleId = r.Id
+            );
+        ");
     }
 
     public async Task LoginOneTimeUser()
@@ -70,9 +95,13 @@ public class QuizzerBaseFunctionTest
         UserManager.Dispose();
     }
 
+    /// <summary>
+    /// Sets the default Authorization header to use the QuizAuthor (test2) token.
+    /// Use this for tests that need QuizAuthor-level access (tags, question sets, etc.)
+    /// </summary>
     internal void AddTokenToEachRequest()
     {
         HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer",
-                    LoggedInUserDictionary.FirstOrDefault(x => x.Key == UserEmailDataCollection.Test1Email).Value);
+                    LoggedInUserDictionary.FirstOrDefault(x => x.Key == UserEmailDataCollection.Test2Email).Value);
     }
 }

@@ -7,6 +7,10 @@ using Modules.Exam.Application.Features.ExamManagement.Dtos;
 using Modules.Exam.Core.ExamAggregate;
 using Modules.Identity.Constants;
 using Modules.Identity.Features.Login;
+using Modules.Quiz.Application.Question.Question.Create;
+using Modules.Quiz.Application.Question.QuestionSet.Create;
+using Modules.Quiz.Application.Question.QuestionSet.Dtos;
+using Modules.Quiz.Core;
 using Quizzer.Api.FunctionalTest.Abstraction;
 
 namespace Quizzer.Api.FunctionalTest.Modules.Exam;
@@ -39,19 +43,30 @@ public class ExamEndpointTest : QuizzerBaseFunctionTest
     [Fact]
     public async Task Should_CreateExam_WhenQuizAuthorCreatesExam()
     {
-        // Arrange: Create a question set first
+        // Arrange: Login as QuizAuthor and create a question set first
         var quizAuthorToken = await GetQuizAuthorToken();
         HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", quizAuthorToken);
 
+        var questionCommands = new List<CreateQuestionCommand>
+        {
+            new("What is 2+2?", "Basic math", 5,
+            [
+                new("3", false),
+                new("4", true),
+                new("5", false),
+            ]),
+        };
         var createSetResponse = await HttpClient.PostAsJsonAsync(
-            "/api/question/questionSet",
-            new { Name = "ExamSet", SetCode = "ES01", Details = "Set for exam testing" });
+            QuestionModuleConstants.Route.QuestionSetRoute.CreateQuestionSet,
+            new CreateQuestionSetCommand("ExamTestSet", "ES01", "Set for exam testing", questionCommands));
         createSetResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        var questionSet = await createSetResponse.Content.ReadFromJsonAsync<QuestionSetResponse>();
+        questionSet.Should().NotBeNull();
 
-        // Act: Create an exam
+        // Act: Create an exam using the actual QuestionSetId
         var createExamResponse = await HttpClient.PostAsJsonAsync(
             ExamModuleConstants.Route.CreateExam,
-            new CreateExamCommand("Test Exam", "A test exam", 1, 60, 100, 50, null, null));
+            new CreateExamCommand("Test Exam", "A test exam", questionSet!.QuestionSetId, 60, 100, 50, null, null));
 
         // Assert
         createExamResponse.StatusCode.Should().Be(HttpStatusCode.OK);
