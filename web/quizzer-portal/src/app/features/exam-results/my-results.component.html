@@ -1,0 +1,51 @@
+<h2>My Exam Results</h2>
+
+<p-table
+  [value]="results()"
+  [lazy]="true"
+  [paginator]="true"
+  [rows]="10"
+  [totalRecords]="totalRecords()"
+  [loading]="loading()"
+  [rowsPerPageOptions]="[5, 10, 20]"
+  [rowHover]="true"
+  (onLazyLoad)="onLazyLoad($event)"
+>
+  <ng-template #header>
+    <tr>
+      <th>Exam Title</th>
+      <th>Started At</th>
+      <th>Submitted At</th>
+      <th>Status</th>
+      <th>Score</th>
+      <th>Pass/Fail</th>
+    </tr>
+  </ng-template>
+
+  <ng-template #body let-exam>
+    <tr (click)="viewResult(exam)" style="cursor: pointer;">
+      <td>{{ exam.examTitle }}</td>
+      <td>{{ exam.startedAt | date: 'medium' }}</td>
+      <td>{{ exam.submittedAt ? (exam.submittedAt | date: 'medium') : '-' }}</td>
+      <td>
+        <p-tag [value]="exam.status" [severity]="getStatusSeverity(exam.status)" />
+      </td>
+      <td>{{ exam.totalScore !== null ? exam.totalScore : '-' }}</td>
+      <td>
+        @if (exam.isPassed === true) {
+          <p-tag value="Passed" severity="success" />
+        } @else if (exam.isPassed === false) {
+          <p-tag value="Failed" severity="danger" />
+        } @else {
+          -
+        }
+      </td>
+    </tr>
+  </ng-template>
+
+  <ng-template #emptymessage>
+    <tr>
+      <td colspan="6" style="text-align: center;">No results found.</td>
+    </tr>
+  </ng-template>
+</p-table>

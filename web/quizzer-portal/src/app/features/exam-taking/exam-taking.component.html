@@ -1,0 +1,120 @@
+@if (attempt()) {
+  <div class="exam-taking-container">
+    <!-- Timer Bar -->
+    <div class="timer-bar">
+      <p-card>
+        <div class="timer-bar-content">
+          <h2 class="exam-title">{{ attempt()!.examTitle }}</h2>
+          <div class="timer-section">
+            <p-tag
+              [severity]="remainingSeconds() < 60 ? 'danger' : remainingSeconds() < 300 ? 'warn' : 'info'"
+              [value]="'⏱ ' + formattedTime()"
+              styleClass="timer-tag"
+            />
+            <span class="question-counter">
+              Question {{ currentQuestionIndex() + 1 }} of {{ attempt()!.questions.length }}
+            </span>
+          </div>
+        </div>
+        <p-progressbar
+          [value]="timerPercentage()"
+          [showValue]="false"
+          styleClass="timer-progress"
+        />
+      </p-card>
+    </div>
+
+    <div class="exam-body">
+      <!-- Question Area -->
+      <div class="question-area">
+        <p-card>
+          @if (currentQuestion(); as question) {
+            <div class="question-header">
+              <h3>Question {{ currentQuestionIndex() + 1 }}</h3>
+              @if (question.marks !== null) {
+                <p-tag severity="info" [value]="question.marks + ' marks'" />
+              }
+            </div>
+            <p class="question-text">{{ question.questionText }}</p>
+
+            <div class="options-list">
+              @for (option of question.options; track option.optionId) {
+                <div class="option-item">
+                  <p-radiobutton
+                    name="question"
+                    [value]="option.optionId"
+                    [ngModel]="currentAnswer()"
+                    (ngModelChange)="selectOption(option.optionId)"
+                    [inputId]="'opt-' + option.optionId"
+                  />
+                  <label [for]="'opt-' + option.optionId" class="option-label">
+                    {{ option.optionText }}
+                  </label>
+                </div>
+              }
+            </div>
+
+            <div class="navigation-buttons">
+              <p-button
+                label="Previous"
+                icon="pi pi-arrow-left"
+                [disabled]="currentQuestionIndex() === 0"
+                severity="secondary"
+                (onClick)="goToQuestion(currentQuestionIndex() - 1)"
+              />
+              @if (currentQuestionIndex() < attempt()!.questions.length - 1) {
+                <p-button
+                  label="Next"
+                  icon="pi pi-arrow-right"
+                  iconPos="right"
+                  (onClick)="goToQuestion(currentQuestionIndex() + 1)"
+                />
+              } @else {
+                <p-button
+                  label="Submit Exam"
+                  icon="pi pi-check"
+                  severity="success"
+                  (onClick)="confirmSubmit()"
+                />
+              }
+            </div>
+          }
+        </p-card>
+      </div>
+
+      <!-- Question Navigation Sidebar -->
+      <div class="question-nav">
+        <p-card header="Questions">
+          <div class="nav-grid">
+            @for (question of attempt()!.questions; track question.questionId; let i = $index) {
+              <p-button
+                [label]="'' + (i + 1)"
+                [severity]="getQuestionSeverity(i, question.questionId)"
+                [outlined]="i !== currentQuestionIndex()"
+                styleClass="nav-btn"
+                (onClick)="goToQuestion(i)"
+              />
+            }
+          </div>
+          <div class="nav-legend">
+            <span class="legend-item"><span class="dot dot-info"></span> Current</span>
+            <span class="legend-item"><span class="dot dot-success"></span> Answered</span>
+            <span class="legend-item"><span class="dot dot-secondary"></span> Unanswered</span>
+          </div>
+          <div class="nav-summary">
+            <p>Answered: {{ answeredCount() }} / {{ attempt()!.questions.length }}</p>
+          </div>
+          <p-button
+            label="Submit Exam"
+            icon="pi pi-check"
+            severity="success"
+            styleClass="submit-btn"
+            (onClick)="confirmSubmit()"
+          />
+        </p-card>
+      </div>
+    </div>
+  </div>
+
+  <p-confirmdialog />
+}

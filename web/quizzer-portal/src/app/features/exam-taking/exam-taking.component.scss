@@ -1,0 +1,186 @@
+.exam-taking-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.timer-bar {
+  margin-bottom: 1rem;
+}
+
+.timer-bar-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.exam-title {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.timer-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+:host ::ng-deep .timer-tag {
+  font-size: 1.1rem;
+  padding: 0.4rem 0.8rem;
+}
+
+.question-counter {
+  font-weight: 500;
+  color: var(--text-color-secondary);
+}
+
+:host ::ng-deep .timer-progress .p-progressbar {
+  height: 6px;
+}
+
+.exam-body {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.question-area {
+  flex: 1;
+  min-width: 0;
+}
+
+.question-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.question-header h3 {
+  margin: 0;
+}
+
+.question-text {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.option-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--surface-border);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.option-item:hover {
+  background-color: var(--surface-hover);
+}
+
+.option-label {
+  cursor: pointer;
+  flex: 1;
+}
+
+.navigation-buttons {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 1rem;
+  border-top: 1px solid var(--surface-border);
+}
+
+.question-nav {
+  width: 280px;
+  flex-shrink: 0;
+}
+
+.nav-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+:host ::ng-deep .nav-btn {
+  width: 100%;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.85rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.dot-info {
+  background-color: var(--p-blue-500, var(--blue-500));
+}
+
+.dot-success {
+  background-color: var(--p-green-500, var(--green-500));
+}
+
+.dot-secondary {
+  background-color: var(--p-gray-400, var(--gray-400));
+}
+
+.nav-summary {
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+:host ::ng-deep .submit-btn {
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .exam-body {
+    flex-direction: column;
+  }
+
+  .question-nav {
+    width: 100%;
+    order: -1;
+  }
+
+  .nav-grid {
+    grid-template-columns: repeat(auto-fill, minmax(2.5rem, 1fr));
+  }
+}
+
+:host ::ng-deep .p-dialog {
+  max-width: 95vw;
+}

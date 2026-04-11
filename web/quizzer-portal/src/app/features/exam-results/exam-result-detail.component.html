@@ -1,0 +1,86 @@
+@if (loading()) {
+  <div class="loading-container">
+    <i class="pi pi-spin pi-spinner" style="font-size: 2rem;"></i>
+    <p>Loading exam result...</p>
+  </div>
+} @else if (error()) {
+  <div class="error-container">
+    <i class="pi pi-exclamation-triangle" style="font-size: 2rem; color: var(--red-500);"></i>
+    <p>{{ error() }}</p>
+    <p-button label="Go Back" icon="pi pi-arrow-left" severity="secondary" (onClick)="goBack()" />
+  </div>
+} @else if (result(); as r) {
+  <div class="result-page">
+    <div class="header-row">
+      <p-button label="Back to Results" icon="pi pi-arrow-left" severity="secondary" [text]="true" (onClick)="goBack()" />
+    </div>
+
+    <p-card>
+      <div class="score-card">
+        <div class="score-header">
+          <h2 class="exam-title">{{ r.examTitle }}</h2>
+          @if (r.isPassed === true) {
+            <p-tag value="Passed" severity="success" [rounded]="true" />
+          } @else if (r.isPassed === false) {
+            <p-tag value="Failed" severity="danger" [rounded]="true" />
+          } @else {
+            <p-tag value="Pending" severity="warn" [rounded]="true" />
+          }
+        </div>
+
+        <div class="score-details">
+          <div class="score-item">
+            <span class="score-label">Score</span>
+            <span class="score-value">{{ r.totalScore ?? 0 }} / {{ r.totalMarks }}</span>
+          </div>
+          <div class="score-item">
+            <span class="score-label">Passing Marks</span>
+            <span class="score-value">{{ r.passingMarks }}</span>
+          </div>
+          <div class="score-item">
+            <span class="score-label">Submitted</span>
+            <span class="score-value">{{ r.submittedAt ? (r.submittedAt | date: 'medium') : 'Not submitted' }}</span>
+          </div>
+          <div class="score-item">
+            <span class="score-label">Status</span>
+            <span class="score-value">{{ r.status }}</span>
+          </div>
+        </div>
+
+        <div class="progress-section">
+          <span class="progress-label">{{ scorePercentage() }}%</span>
+          <p-progressbar [value]="scorePercentage()" [showValue]="false" />
+        </div>
+      </div>
+    </p-card>
+
+    <h3 class="section-title">Question Breakdown</h3>
+
+    @for (answer of r.answers; track answer.questionId; let i = $index) {
+      <div class="question-card" [class.correct]="answer.isCorrect === true" [class.incorrect]="answer.isCorrect === false">
+        <div class="question-header">
+          <span class="question-number">Q{{ i + 1 }}</span>
+          <span class="question-text">{{ answer.questionText }}</span>
+          <span class="question-marks">
+            {{ answer.marksAwarded ?? 0 }} pts
+          </span>
+        </div>
+        <div class="question-answer">
+          <span class="answer-label">Your Answer:</span>
+          @if (answer.selectedOptionText) {
+            <span class="answer-text">{{ answer.selectedOptionText }}</span>
+          } @else {
+            <span class="answer-text not-answered">Not answered</span>
+          }
+          @if (answer.isCorrect === true) {
+            <p-tag value="Correct" severity="success" />
+          } @else if (answer.isCorrect === false) {
+            <p-tag value="Incorrect" severity="danger" />
+          } @else {
+            <p-tag value="Pending" severity="warn" />
+          }
+        </div>
+      </div>
+    }
+  </div>
+}

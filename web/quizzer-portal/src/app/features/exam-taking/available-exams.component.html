@@ -1,0 +1,66 @@
+<div class="page-header">
+  <h2>Available Exams</h2>
+</div>
+
+@if (loading()) {
+  <div class="loading-container">
+    <p-progressspinner strokeWidth="4" />
+  </div>
+} @else if (availableExams().length === 0) {
+  <div class="empty-container">
+    <i class="pi pi-inbox"></i>
+    <p>No exams available</p>
+  </div>
+} @else {
+  <div class="exams-grid">
+    @for (exam of availableExams(); track exam.examId) {
+      <p-card [header]="exam.title">
+        <p class="exam-description">
+          {{ exam.description ?? 'No description provided.' }}
+        </p>
+        <div class="exam-badges">
+          <p-tag severity="info" [value]="exam.durationInMinutes + ' min'" icon="pi pi-clock" />
+          <p-tag severity="success" [value]="'Total: ' + exam.totalMarks" icon="pi pi-star" />
+          <p-tag severity="warn" [value]="'Pass: ' + exam.passingMarks" icon="pi pi-check-circle" />
+        </div>
+        <div class="exam-actions">
+          <p-button label="Start Exam" icon="pi pi-play" (onClick)="onStartClick(exam)" />
+        </div>
+      </p-card>
+    }
+  </div>
+
+  <div class="paginator-container">
+    <p-paginator
+      [rows]="pageSize()"
+      [totalRecords]="totalRecords()"
+      [first]="first()"
+      (onPageChange)="onPageChange($event)"
+    />
+  </div>
+}
+
+<p-dialog
+  header="Confirm Start Exam"
+  [visible]="dialogVisible()"
+  [modal]="true"
+  [closable]="true"
+  [style]="{ width: '450px' }"
+  (visibleChange)="onDialogVisibleChange($event)"
+>
+  @if (selectedExam(); as exam) {
+    <p>Are you sure you want to start <strong>{{ exam.title }}</strong>?</p>
+    <ul class="confirm-details">
+      <li><strong>Duration:</strong> {{ exam.durationInMinutes }} minutes</li>
+      <li><strong>Total Marks:</strong> {{ exam.totalMarks }}</li>
+      <li><strong>Passing Marks:</strong> {{ exam.passingMarks }}</li>
+    </ul>
+    <p class="confirm-warning">
+      Once started, you will have {{ exam.durationInMinutes }} minutes to complete it.
+    </p>
+    <div class="dialog-footer">
+      <p-button label="Cancel" severity="secondary" (onClick)="onDialogCancel()" [disabled]="starting()" />
+      <p-button label="Start" icon="pi pi-play" (onClick)="onDialogConfirm()" [loading]="starting()" />
+    </div>
+  }
+</p-dialog>
