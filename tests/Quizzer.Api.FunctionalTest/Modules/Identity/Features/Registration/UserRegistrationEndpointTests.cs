@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Modules.Identity.Constants;
 using Modules.Identity.Features.Registration;
-using Modules.Identity.Features.Registration.Enums;
 using Newtonsoft.Json;
 using Quizzer.Api.FunctionalTest.Abstraction;
 using Shared.Core;
@@ -19,7 +18,7 @@ public class UserRegistrationEndpointTests(QuizzerWebApiFactory factory) : Quizz
     {
         //Arrange
 
-        var registerUserCommand = GenerateUserRegistrationCommand(UserType.QuizAuthor);
+        var registerUserCommand = GenerateUserRegistrationCommand();
 
         //Act
 
@@ -34,15 +33,15 @@ public class UserRegistrationEndpointTests(QuizzerWebApiFactory factory) : Quizz
     }
 
     [Fact]
-    public async Task Should_ReturnValidationError_WhenFirstNameIsNotSupplied()
+    public async Task Should_ReturnValidationError_WhenFullNameIsNotSupplied()
     {
         //Arrange
 
-        var registerUserCommand = GenerateUserRegistrationCommand(UserType.QuizAuthor);
+        var registerUserCommand = GenerateUserRegistrationCommand();
 
         registerUserCommand = registerUserCommand with
         {
-            FirstName = ""
+            FullName = ""
         };
 
         //Act
@@ -56,32 +55,7 @@ public class UserRegistrationEndpointTests(QuizzerWebApiFactory factory) : Quizz
         var responseContent = await response.Content.ReadFromJsonAsync<ProblemDetails>();
         responseContent.Should().NotBeNull();
         var errors = JsonConvert.DeserializeObject<List<Error>>(responseContent?.Extensions["errors"]?.ToString() ?? string.Empty);
-        errors?.FirstOrDefault()?.Message.Should().Be("First name can not be empty");
-    }
-
-    [Theory]
-    [InlineData(UserType.SuperAdmin)]
-    [InlineData(UserType.SupportAdmin)]
-    public async Task Should_ReturnValidationResultObject_WhenUserTypeIsSuperAdminOrSupportAdmin(UserType userType)
-    {
-        //Arrange
-
-        var registerUserCommand = GenerateUserRegistrationCommand(userType);
-
-        //Act
-
-        HttpResponseMessage response =
-            await HttpClient.PostAsJsonAsync(IdentityModuleConstants.Route.Register, registerUserCommand);
-
-        //Assert
-
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        var responseContent = await response.Content.ReadFromJsonAsync<ProblemDetails>();
-        responseContent.Should().NotBeNull();
-
-        responseContent?.Status.Should().Be(StatusCodes.Status400BadRequest);
-        responseContent?.Title.Should().Be("Identity.Registration");
-        responseContent?.Detail.Should().Be("Selected User type is not valid to use this registration flow");
+        errors?.FirstOrDefault()?.Message.Should().Be("Full name can not be empty");
     }
 
     [Fact]
@@ -89,7 +63,7 @@ public class UserRegistrationEndpointTests(QuizzerWebApiFactory factory) : Quizz
     {
         //Arrange
 
-        var registerUserCommand = GenerateUserRegistrationCommand(UserType.QuizAuthor);
+        var registerUserCommand = GenerateUserRegistrationCommand();
 
         //Act
 
@@ -106,17 +80,13 @@ public class UserRegistrationEndpointTests(QuizzerWebApiFactory factory) : Quizz
 
     #region Private methods
 
-    private static UserRegistrationCommand GenerateUserRegistrationCommand(UserType userType)
+    private static UserRegistrationCommand GenerateUserRegistrationCommand()
     {
         var command = new Faker<UserRegistrationCommand>()
             .CustomInstantiator(f => new UserRegistrationCommand(
-                f.Name.FirstName(),
-                f.Name.LastName(),
+                f.Name.FullName(),
                 f.Internet.Email(),
-                f.Phone.PhoneNumber(),
-                "123456@Qa",
-                "123456@Qa",
-                userType))
+                "123456@Qa"))
             .Generate();
         return command;
     }

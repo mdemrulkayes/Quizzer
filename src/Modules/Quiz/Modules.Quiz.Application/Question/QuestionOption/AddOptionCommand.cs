@@ -1,4 +1,5 @@
-﻿using Modules.Quiz.Application.Question.Question.Dtos;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Modules.Quiz.Application.Question.Question.Dtos;
 using Modules.Quiz.Core.QuestionAggregate;
 using Shared.Core;
 
@@ -8,7 +9,7 @@ public sealed record AddOptionCommand(long QuestionId, string OptionText, bool I
 
 internal sealed class AddOptionCommandHandler(
     IQuestionRepository questionRepository,
-    IUnitOfWork unitOfWork)
+    [FromKeyedServices(ModuleKeys.Quiz)] IUnitOfWork unitOfWork)
     : ICommandHandler<AddOptionCommand, Result<QuestionOptionResponse>>
 {
     public async Task<Result<QuestionOptionResponse>> Handle(AddOptionCommand request, CancellationToken cancellationToken)

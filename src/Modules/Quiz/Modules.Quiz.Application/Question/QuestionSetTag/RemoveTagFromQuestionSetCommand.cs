@@ -1,4 +1,5 @@
-﻿using Modules.Quiz.Core.QuestionAggregate;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Modules.Quiz.Core.QuestionAggregate;
 using Shared.Core;
 
 namespace Modules.Quiz.Application.Question.QuestionSetTag;
@@ -7,7 +8,7 @@ public sealed record RemoveTagFromQuestionSetCommand(long QuestionSetId, long Ta
 
 internal sealed class RemoveTagFromQuestionSetCommandHandler(
     IQuestionSetRepository questionSetRepository,
-    IUnitOfWork unitOfWork)
+    [FromKeyedServices(ModuleKeys.Quiz)] IUnitOfWork unitOfWork)
     : ICommandHandler<RemoveTagFromQuestionSetCommand, Result<bool>>
 {
     public async Task<Result<bool>> Handle(RemoveTagFromQuestionSetCommand request, CancellationToken cancellationToken)

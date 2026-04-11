@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Modules.Exam.Application.Features.ExamManagement.Dtos;
 using Modules.Exam.Application.Features.ExamResults.Dtos;
 using Modules.Exam.Application.Services;
@@ -7,6 +8,7 @@ using Modules.Exam.Core.ExamAggregate;
 using Modules.Exam.Infrastructure.Persistence;
 using Shared.Core;
 using Shared.Core.Extensions;
+using Shared.Core.ModuleServices;
 
 namespace Modules.Exam.Application.Features.ExamResults.Query;
 
@@ -23,7 +25,8 @@ internal sealed class GetMyExamResultQueryHandler(
     IUser currentUser,
     ITimeProvider timeProvider,
     IExamGradingService gradingService,
-    IUnitOfWork unitOfWork)
+    [FromKeyedServices(ModuleKeys.Exam)] IUnitOfWork unitOfWork,
+    IQuestionQueryService questionQueryService)
     : IQueryHandler<GetMyExamResultQuery, Result<ExamResultResponse>>
 {
     public async Task<Result<ExamResultResponse>> Handle(GetMyExamResultQuery request, CancellationToken cancellationToken)
@@ -52,22 +55,13 @@ internal sealed class GetMyExamResultQueryHandler(
 
         var exam = attempt.Exam!;
 
-        // Build answer details with question text from Quiz module
-        var questionIds = attempt.Answers.Select(a => a.QuestionId).ToList();
-        var questions = await dbContext.Database
-            .SqlQueryRaw<QuestionTextRow>(
-                @"SELECT QuestionId, AskedQuestion FROM [Question].[Questions] WHERE IsDeleted = 0")
-            .ToListAsync(cancellationToken);
-
+        // Build answer details via IQuestionQueryService (no cross-schema SQL)
+        var questionIds = attempt.Answers.Select(a => a.QuestionId).Distinct().ToList();
+        var questions = await questionQueryService.GetQuestionsBySetIdAsync(exam.QuestionSetId, cancellationToken);
         var questionTextMap = questions.ToDictionary(q => q.QuestionId, q => q.AskedQuestion);
 
-        var optionIds = attempt.Answers.Where(a => a.SelectedOptionId.HasValue).Select(a => a.SelectedOptionId!.Value).ToList();
-        var optionTexts = await dbContext.Database
-            .SqlQueryRaw<OptionTextRow>(
-                @"SELECT QuestionOptionId, OptionText FROM [Question].[QuestionOptions] WHERE IsDeleted = 0")
-            .ToListAsync(cancellationToken);
-
-        var optionTextMap = optionTexts.ToDictionary(o => o.QuestionOptionId, o => o.OptionText);
+        var options = await questionQueryService.GetOptionsByQuestionIdsAsync(questionIds, cancellationToken);
+        var optionTextMap = options.ToDictionary(o => o.QuestionOptionId, o => o.OptionText);
 
         var answerDetails = attempt.Answers.Select(a => new AnswerDetailResponse(
             a.QuestionId,
@@ -130,16 +124,4 @@ internal sealed class GetMyAllResultsQueryHandler(
 
         return await query.ToPaginatedListAsync(request.PageNumber, request.PageSize, cancellationToken);
     }
-}
-
-internal sealed class QuestionTextRow
-{
-    public long QuestionId { get; set; }
-    public string AskedQuestion { get; set; } = string.Empty;
-}
-
-internal sealed class OptionTextRow
-{
-    public long QuestionOptionId { get; set; }
-    public string OptionText { get; set; } = string.Empty;
 }

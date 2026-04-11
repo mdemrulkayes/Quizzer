@@ -1,12 +1,12 @@
-﻿using AutoMapper;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Modules.Quiz.Application.Common.Extensions;
 using Modules.Quiz.Application.Tag.Dtos;
 using Modules.Quiz.Core.Tag;
 using Shared.Core;
 
 namespace Modules.Quiz.Application.Tag.Update;
 internal sealed class UpdateTagCommandHandler(ITagRepository repository,
-    IUnitOfWork unitOfWork,
-    IMapper mapper) : ICommandHandler<UpdateTagCommand, Result<TagResponse>>
+    [FromKeyedServices(ModuleKeys.Quiz)] IUnitOfWork unitOfWork) : ICommandHandler<UpdateTagCommand, Result<TagResponse>>
 {
     public async Task<Result<TagResponse>> Handle(UpdateTagCommand request, CancellationToken cancellationToken = default)
     {
@@ -26,6 +26,6 @@ internal sealed class UpdateTagCommandHandler(ITagRepository repository,
         repository.Update(updatedTag.Value);
         await unitOfWork.CommitAsync(cancellationToken);
 
-        return mapper.Map<TagResponse>(updatedTag.Value);
+        return updatedTag.Value.ToResponse();
     }
 }

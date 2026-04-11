@@ -1,12 +1,12 @@
-﻿using AutoMapper;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Modules.Quiz.Application.Common.Extensions;
 using Modules.Quiz.Application.Question.Question.Dtos;
 using Modules.Quiz.Core.QuestionAggregate;
 using Shared.Core;
 
 namespace Modules.Quiz.Application.Question.Question.Update;
 internal sealed class UpdateQuestionCommandHandler(IQuestionRepository repository,
-    IUnitOfWork unitOfWork,
-    IMapper mapper) : ICommandHandler<UpdateQuestionCommand, Result<QuestionResponse>>
+    [FromKeyedServices(ModuleKeys.Quiz)] IUnitOfWork unitOfWork) : ICommandHandler<UpdateQuestionCommand, Result<QuestionResponse>>
 {
     public async Task<Result<QuestionResponse>> Handle(UpdateQuestionCommand request, CancellationToken cancellationToken = default)
     {
@@ -26,6 +26,6 @@ internal sealed class UpdateQuestionCommandHandler(IQuestionRepository repositor
         repository.Update(updateQuestionResult.Value);
         await unitOfWork.CommitAsync(cancellationToken);
 
-        return mapper.Map<QuestionResponse>(updateQuestionResult.Value);
+        return updateQuestionResult.Value.ToResponse();
     }
 }

@@ -7,7 +7,6 @@ using Modules.Quiz.Core;
 using Quizzer.Api.FunctionalTest.Abstraction;
 using Quizzer.Api.FunctionalTest.DataCollection;
 using System.Net;
-using System.Net.Http.Headers;
 using System.Net.Http.Json;
 
 namespace Quizzer.Api.FunctionalTest.Modules.Question.Tag;

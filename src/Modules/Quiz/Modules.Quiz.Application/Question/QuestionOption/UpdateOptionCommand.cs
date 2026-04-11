@@ -1,4 +1,5 @@
-﻿using Modules.Quiz.Application.Question.Question.Dtos;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Modules.Quiz.Application.Question.Question.Dtos;
 using Modules.Quiz.Core.QuestionAggregate;
 using Shared.Core;
 
@@ -8,7 +9,7 @@ public sealed record UpdateOptionCommand(long QuestionId, long OptionId, string 
 
 internal sealed class UpdateOptionCommandHandler(
     IQuestionRepository questionRepository,
-    IUnitOfWork unitOfWork)
+    [FromKeyedServices(ModuleKeys.Quiz)] IUnitOfWork unitOfWork)
     : ICommandHandler<UpdateOptionCommand, Result<QuestionOptionResponse>>
 {
     public async Task<Result<QuestionOptionResponse>> Handle(UpdateOptionCommand request, CancellationToken cancellationToken)

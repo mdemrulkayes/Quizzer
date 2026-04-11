@@ -1,9 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Modules.Exam.Application.Services;
 using Modules.Exam.Core.Enums;
 using Modules.Exam.Core.ExamAggregate;
 using Modules.Exam.Infrastructure.Persistence;
 using Shared.Core;
+using Shared.Core.IntegrationEvents;
+using Shared.Core.IntegrationEvents.Events;
 
 namespace Modules.Exam.Application.Features.ExamTaking.Submit;
 
@@ -23,7 +26,8 @@ internal sealed class SubmitExamCommandHandler(
     ITimeProvider timeProvider,
     IExamGradingService gradingService,
     ExamModuleDbContext dbContext,
-    IUnitOfWork unitOfWork)
+    [FromKeyedServices(ModuleKeys.Exam)] IUnitOfWork unitOfWork,
+    IIntegrationEventPublisher eventPublisher)
     : ICommandHandler<SubmitExamCommand, Result<ExamSubmitResponse>>
 {
     public async Task<Result<ExamSubmitResponse>> Handle(SubmitExamCommand command, CancellationToken cancellationToken)
@@ -54,6 +58,16 @@ internal sealed class SubmitExamCommandHandler(
 
         dbContext.ExamAttempts.Update(attempt);
         await unitOfWork.CommitAsync(cancellationToken);
+
+        await eventPublisher.PublishAsync(
+            new ExamGradedEvent(
+                exam.ExamId,
+                attempt.ExamAttemptId,
+                userId,
+                attempt.TotalScore ?? 0,
+                exam.TotalMarks,
+                attempt.IsPassed ?? false),
+            cancellationToken);
 
         return new ExamSubmitResponse(
             attempt.ExamAttemptId,

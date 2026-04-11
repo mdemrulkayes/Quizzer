@@ -20,19 +20,19 @@ public sealed class ApplicationUser : IdentityUser<Guid>, IUpdatedAuditableEntit
     {
         
     }
-    private ApplicationUser(string firstName, string lastName, string email, string phoneNumber, UserType userType, ITimeProvider timeProvider)
+    private ApplicationUser(string firstName, string lastName, string email, string? phoneNumber, UserType userType, ITimeProvider timeProvider)
     {
         FirstName = firstName;
         LastName = lastName;
         Email = UserName = NormalizedEmail = NormalizedUserName = email;
         PhoneNumber = phoneNumber;
         EmailConfirmed = true;
-        PhoneNumberConfirmed = true;
+        PhoneNumberConfirmed = phoneNumber is not null;
         CreatedDate = timeProvider.TimeNow;
         UserType = userType;
     }
 
-    internal static Result<ApplicationUser> RegisterUser(string firstName, string lastName, string email, string phoneNumber, UserType userType, ITimeProvider timeProvider)
+    internal static Result<ApplicationUser> RegisterUser(string firstName, string lastName, string email, string? phoneNumber, UserType userType, ITimeProvider timeProvider)
     {
         if (userType is UserType.SuperAdmin or UserType.SupportAdmin)
         {

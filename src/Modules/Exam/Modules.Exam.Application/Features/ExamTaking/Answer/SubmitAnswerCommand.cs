@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Modules.Exam.Core.Enums;
 using Modules.Exam.Core.ExamAggregate;
 using Modules.Exam.Infrastructure.Persistence;
@@ -16,7 +17,7 @@ internal sealed class SubmitAnswerCommandHandler(
     IUser currentUser,
     ITimeProvider timeProvider,
     ExamModuleDbContext dbContext,
-    IUnitOfWork unitOfWork)
+    [FromKeyedServices(ModuleKeys.Exam)] IUnitOfWork unitOfWork)
     : ICommandHandler<SubmitAnswerCommand, Result<bool>>
 {
     public async Task<Result<bool>> Handle(SubmitAnswerCommand command, CancellationToken cancellationToken)

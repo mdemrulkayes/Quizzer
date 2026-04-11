@@ -1,4 +1,5 @@
-﻿using Modules.Quiz.Core.QuestionAggregate;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Modules.Quiz.Core.QuestionAggregate;
 using Shared.Core;
 
 namespace Modules.Quiz.Application.Question.QuestionOption;
@@ -7,7 +8,7 @@ public sealed record DeleteOptionCommand(long QuestionId, long OptionId) : IComm
 
 internal sealed class DeleteOptionCommandHandler(
     IQuestionRepository questionRepository,
-    IUnitOfWork unitOfWork)
+    [FromKeyedServices(ModuleKeys.Quiz)] IUnitOfWork unitOfWork)
     : ICommandHandler<DeleteOptionCommand, Result<bool>>
 {
     public async Task<Result<bool>> Handle(DeleteOptionCommand request, CancellationToken cancellationToken)

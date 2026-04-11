@@ -25,23 +25,37 @@ public class BaseRepository<TEntity>(ExamModuleDbContext context) : IRepository<
         return _dbSet.Remove(entity).Entity;
     }
 
-    public virtual async Task<List<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>>? expression = null, CancellationToken cancellationToken = default)
+    public virtual async Task<List<TEntity>> GetAllAsync(
+        Expression<Func<TEntity, bool>>? expression = null,
+        Func<IQueryable<TEntity>, IQueryable<TEntity>>? include = null,
+        CancellationToken cancellationToken = default)
     {
-        if (expression != null)
-            return await _dbSet.Where(expression).ToListAsync(cancellationToken);
-        return await _dbSet.ToListAsync(cancellationToken);
+        IQueryable<TEntity> query = _dbSet;
+        if (include != null) query = include(query);
+        if (expression != null) query = query.Where(expression);
+        return await query.ToListAsync(cancellationToken);
     }
 
-    public virtual async Task<TEntity?> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> expression, string includeProperties = "")
+    public virtual async Task<TEntity?> FirstOrDefaultAsync(
+        Expression<Func<TEntity, bool>> expression,
+        Func<IQueryable<TEntity>, IQueryable<TEntity>>? include = null)
     {
-        return await _dbSet.FirstOrDefaultAsync(expression);
+        IQueryable<TEntity> query = _dbSet;
+        if (include != null) query = include(query);
+        return await query.FirstOrDefaultAsync(expression);
     }
 
-    public virtual async Task<PaginatedList<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>>? expression = null, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default)
+    public virtual async Task<PaginatedList<TEntity>> GetAllAsync(
+        Expression<Func<TEntity, bool>>? expression = null,
+        Func<IQueryable<TEntity>, IQueryable<TEntity>>? include = null,
+        int pageNumber = 1,
+        int pageSize = 10,
+        CancellationToken cancellationToken = default)
     {
-        if (expression != null)
-            return await _dbSet.Where(expression).ToPaginatedListAsync(pageNumber, pageSize, cancellationToken);
-        return await _dbSet.ToPaginatedListAsync(pageNumber, pageSize, cancellationToken);
+        IQueryable<TEntity> query = _dbSet;
+        if (include != null) query = include(query);
+        if (expression != null) query = query.Where(expression);
+        return await query.ToPaginatedListAsync(pageNumber, pageSize, cancellationToken);
     }
 
     public virtual TEntity Update(TEntity entity)

@@ -5,8 +5,6 @@ using FluentAssertions;
 using Modules.Identity.Constants;
 using Modules.Identity.Features.Login;
 using Modules.Identity.Features.Registration;
-using Modules.Identity.Features.Registration.Enums;
-using Modules.Identity.Features.UserManagement;
 using Quizzer.Api.FunctionalTest.Abstraction;
 
 namespace Quizzer.Api.FunctionalTest.Modules.Identity.Features.UserManagement;
@@ -24,8 +22,7 @@ public class UserManagementEndpointTest : QuizzerBaseFunctionTest
         // Register an admin user
         var faker = new Bogus.Faker();
         await HttpClient.PostAsJsonAsync(IdentityModuleConstants.Route.Register,
-            new UserRegistrationCommand(faker.Name.FirstName(), faker.Name.LastName(),
-                "admin@test.com", faker.Phone.PhoneNumber(), "AdminPass1#", "AdminPass1#", UserType.QuizAuthor));
+            new UserRegistrationCommand(faker.Name.FullName(), "admin@test.com", "AdminPass1#"));
 
         // Promote to SuperAdmin via UserManager
         var user = await UserManager.FindByEmailAsync("admin@test.com");

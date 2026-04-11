@@ -4,8 +4,6 @@ using System.Net.Http.Json;
 using FluentAssertions;
 using Modules.Identity.Constants;
 using Modules.Identity.Features.Login;
-using Modules.Quiz.Application.Question.Question.Dtos;
-using Modules.Quiz.Core;
 using Modules.Quiz.Endpoints.QuestionOption;
 using Quizzer.Api.FunctionalTest.Abstraction;
 

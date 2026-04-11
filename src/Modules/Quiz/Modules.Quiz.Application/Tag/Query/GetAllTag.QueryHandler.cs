@@ -1,12 +1,12 @@
 ﻿using System.Linq.Expressions;
-using AutoMapper;
+using Modules.Quiz.Application.Common.Extensions;
 using Modules.Quiz.Application.Tag.Dtos;
 using Modules.Quiz.Core.Tag;
 using Shared.Application;
 using Shared.Core;
 
 namespace Modules.Quiz.Application.Tag.Query;
-internal sealed class GetAllTagQueryHandler(ITagRepository tagRepository, IMapper mapper)
+internal sealed class GetAllTagQueryHandler(ITagRepository tagRepository)
     : IQueryHandler<GetAllTagQuery, Result<PagedListDto<TagResponse>>>
 {
     public async Task<Result<PagedListDto<TagResponse>>> Handle(GetAllTagQuery request, CancellationToken cancellationToken)
@@ -25,6 +25,6 @@ internal sealed class GetAllTagQueryHandler(ITagRepository tagRepository, IMappe
             pageSize: request.PageSize,
             cancellationToken: cancellationToken);
 
-        return mapper.Map<PagedListDto<TagResponse>>(tags);
+        return tags.ToPagedListDto(t => t.ToResponse());
     }
 }

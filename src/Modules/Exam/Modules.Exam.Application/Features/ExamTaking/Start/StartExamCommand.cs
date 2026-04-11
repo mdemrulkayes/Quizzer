@@ -1,9 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Modules.Exam.Application.Features.ExamManagement.Dtos;
+using Microsoft.Extensions.DependencyInjection;
 using Modules.Exam.Core.Enums;
 using Modules.Exam.Core.ExamAggregate;
 using Modules.Exam.Infrastructure.Persistence;
 using Shared.Core;
+using Shared.Core.ModuleServices;
 
 namespace Modules.Exam.Application.Features.ExamTaking.Start;
 
@@ -31,10 +32,11 @@ public sealed record ExamQuestionOptionResponse(
 internal sealed class StartExamCommandHandler(
     IExamRepository examRepository,
     IExamAttemptRepository attemptRepository,
-    IUnitOfWork unitOfWork,
+    [FromKeyedServices(ModuleKeys.Exam)] IUnitOfWork unitOfWork,
     IUser currentUser,
     ITimeProvider timeProvider,
-    ExamModuleDbContext examDbContext)
+    ExamModuleDbContext examDbContext,
+    IQuestionQueryService questionQueryService)
     : ICommandHandler<StartExamCommand, Result<ExamAttemptStartResponse>>
 {
     public async Task<Result<ExamAttemptStartResponse>> Handle(StartExamCommand command, CancellationToken cancellationToken)
@@ -70,21 +72,10 @@ internal sealed class StartExamCommandHandler(
         attemptRepository.Add(attempt);
         await unitOfWork.CommitAsync(cancellationToken);
 
-        // Fetch questions from the Question module's schema (cross-schema read)
-        var questions = await examDbContext.Database.SqlQueryRaw<QuestionRow>(
-            @"SELECT q.QuestionId, q.AskedQuestion, q.QuestionMark 
-              FROM [Question].[Questions] q 
-              WHERE q.QuestionSetId = {0} AND q.IsDeleted = 0", exam.QuestionSetId)
-            .ToListAsync(cancellationToken);
-
+        // Fetch questions via IQuestionQueryService (no cross-schema SQL)
+        var questions = await questionQueryService.GetQuestionsBySetIdAsync(exam.QuestionSetId, cancellationToken);
         var questionIds = questions.Select(q => q.QuestionId).ToList();
-
-        var options = await examDbContext.Database.SqlQueryRaw<OptionRow>(
-            @"SELECT qo.QuestionOptionId, qo.OptionText, qo.QuestionId 
-              FROM [Question].[QuestionOptions] qo 
-              WHERE qo.QuestionId IN (SELECT q.QuestionId FROM [Question].[Questions] q WHERE q.QuestionSetId = {0} AND q.IsDeleted = 0)
-              AND qo.IsDeleted = 0", exam.QuestionSetId)
-            .ToListAsync(cancellationToken);
+        var options = await questionQueryService.GetOptionsByQuestionIdsAsync(questionIds, cancellationToken);
 
         var optionsByQuestion = options.GroupBy(o => o.QuestionId).ToDictionary(g => g.Key, g => g.ToList());
 
@@ -107,19 +98,4 @@ internal sealed class StartExamCommandHandler(
             attempt.StartedAt.AddMinutes(exam.DurationInMinutes),
             examQuestions);
     }
-}
-
-// Internal DTOs for raw SQL queries
-internal sealed class QuestionRow
-{
-    public long QuestionId { get; set; }
-    public string AskedQuestion { get; set; } = string.Empty;
-    public int? QuestionMark { get; set; }
-}
-
-internal sealed class OptionRow
-{
-    public long QuestionOptionId { get; set; }
-    public string OptionText { get; set; } = string.Empty;
-    public long QuestionId { get; set; }
 }

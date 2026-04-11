@@ -1,15 +1,12 @@
-﻿using AutoMapper;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Modules.Quiz.Application.Common.Extensions;
 using Modules.Quiz.Application.Tag.Dtos;
 using Modules.Quiz.Core.Tag;
 using Shared.Core;
 
 namespace Modules.Quiz.Application.Tag.Create;
-internal sealed class CreateTagCommandHandler(ITagRepository repository, IUnitOfWork unitOfWork, IMapper mapper) : ICommandHandler<CreateTagCommand, Result<TagResponse>>
+internal sealed class CreateTagCommandHandler(ITagRepository repository, [FromKeyedServices(ModuleKeys.Quiz)] IUnitOfWork unitOfWork) : ICommandHandler<CreateTagCommand, Result<TagResponse>>
 {
-    /// <summary>Handles a request</summary>
-    /// <param name="request">The request</param>
-    /// <param name="cancellationToken">Cancellation token</param>
-    /// <returns>Response from the request</returns>
     public async Task<Result<TagResponse>> Handle(CreateTagCommand request, CancellationToken cancellationToken)
     {
         var tag = Core.Tag.Tag.Create(request.Name, request.Description);
@@ -24,6 +21,6 @@ internal sealed class CreateTagCommandHandler(ITagRepository repository, IUnitOf
         repository.Add(dataTag);
         await unitOfWork.CommitAsync(cancellationToken);
 
-        return mapper.Map<Core.Tag.Tag, TagResponse>(dataTag);
+        return dataTag.ToResponse();
     }
 }

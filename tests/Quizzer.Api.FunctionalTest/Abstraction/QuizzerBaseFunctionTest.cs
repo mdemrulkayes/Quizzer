@@ -5,7 +5,6 @@ using Modules.Identity.Constants;
 using Modules.Identity.Entities;
 using Modules.Identity.Features.Login;
 using Modules.Identity.Features.Registration;
-using Modules.Identity.Features.Registration.Enums;
 using Modules.Quiz.Infrastructure.Data;
 using Quizzer.Api.FunctionalTest.DataCollection;
 using Shared.Core;
@@ -56,14 +55,9 @@ public class QuizzerBaseFunctionTest
         var faker = new Faker();
         return
         [
-            new UserRegistrationCommand(faker.Name.FirstName(), faker.Name.LastName(), "test1@gmail.com", faker.Phone.PhoneNumber(), "Aa123456#", "Aa123456#",
-                UserType.Examine),
-
-            new UserRegistrationCommand(faker.Name.FirstName(), faker.Name.LastName(), "test2@gmail.com", faker.Phone.PhoneNumber(), "Aa123456!", "Aa123456!",
-                UserType.QuizAuthor),
-
-            new UserRegistrationCommand(faker.Name.FirstName(), faker.Name.LastName(), "test3@gmail.com", faker.Phone.PhoneNumber(), "Aa123456%", "Aa123456%",
-                UserType.QuizAuthor)
+            new UserRegistrationCommand(faker.Name.FullName(), "test1@gmail.com", "Aa123456#"),
+            new UserRegistrationCommand(faker.Name.FullName(), "test2@gmail.com", "Aa123456!"),
+            new UserRegistrationCommand(faker.Name.FullName(), "test3@gmail.com", "Aa123456%")
         ];
     }
 

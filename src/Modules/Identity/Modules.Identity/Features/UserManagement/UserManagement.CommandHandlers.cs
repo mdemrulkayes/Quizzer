@@ -2,6 +2,8 @@
 using Microsoft.Extensions.Logging;
 using Modules.Identity.Entities;
 using Shared.Core;
+using Shared.Core.IntegrationEvents;
+using Shared.Core.IntegrationEvents.Events;
 
 namespace Modules.Identity.Features.UserManagement;
 
@@ -52,7 +54,8 @@ internal sealed class DeleteUserCommandHandler(
     UserManager<ApplicationUser> userManager,
     IUser currentUser,
     ILogger<DeleteUserCommandHandler> logger,
-    ITimeProvider timeProvider)
+    ITimeProvider timeProvider,
+    IIntegrationEventPublisher eventPublisher)
     : ICommandHandler<DeleteUserCommand, Result<bool>>
 {
     public async Task<Result<bool>> Handle(DeleteUserCommand command, CancellationToken cancellationToken)
@@ -83,6 +86,10 @@ internal sealed class DeleteUserCommandHandler(
         }
 
         logger.LogInformation("User {UserId} soft-deleted by {CurrentUserId}", command.UserId, currentUser.Id);
+
+        await eventPublisher.PublishAsync(
+            new UserDeletedEvent(command.UserId), cancellationToken);
+
         return true;
     }
 }

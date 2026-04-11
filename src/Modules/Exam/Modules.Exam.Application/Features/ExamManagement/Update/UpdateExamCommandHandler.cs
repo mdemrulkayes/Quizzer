@@ -1,4 +1,5 @@
-﻿using Modules.Exam.Application.Features.ExamManagement.Dtos;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Modules.Exam.Application.Features.ExamManagement.Dtos;
 using Modules.Exam.Core.ExamAggregate;
 using Shared.Core;
 
@@ -6,7 +7,7 @@ namespace Modules.Exam.Application.Features.ExamManagement.Update;
 
 internal sealed class UpdateExamCommandHandler(
     IExamRepository examRepository,
-    IUnitOfWork unitOfWork)
+    [FromKeyedServices(ModuleKeys.Exam)] IUnitOfWork unitOfWork)
     : ICommandHandler<UpdateExamCommand, Result<ExamResponse>>
 {
     public async Task<Result<ExamResponse>> Handle(UpdateExamCommand command, CancellationToken cancellationToken)

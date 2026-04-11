@@ -1,5 +1,6 @@
 ﻿using System.Linq.Expressions;
-using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using Modules.Quiz.Application.Common.Extensions;
 using Modules.Quiz.Application.Question.Question.Dtos;
 using Modules.Quiz.Core.QuestionAggregate;
 using Shared.Application;
@@ -7,7 +8,7 @@ using Shared.Core;
 using QuestionEntity = Modules.Quiz.Core.QuestionAggregate.Question;
 
 namespace Modules.Quiz.Application.Question.Question.Query;
-internal sealed class GetAllQuestionQueryHandler(IQuestionRepository repository, IMapper mapper)
+internal sealed class GetAllQuestionQueryHandler(IQuestionRepository repository)
     : IQueryHandler<GetAllQuestionQuery, Result<PagedListDto<QuestionResponse>>>
 {
     public async Task<Result<PagedListDto<QuestionResponse>>> Handle(GetAllQuestionQuery request, CancellationToken cancellationToken)
@@ -39,10 +40,11 @@ internal sealed class GetAllQuestionQueryHandler(IQuestionRepository repository,
 
         var questions = await repository.GetAllAsync(
             expression: filter,
+            include: q => q.Include(question => question.Options),
             pageNumber: request.PageNumber,
             pageSize: request.PageSize,
             cancellationToken: cancellationToken);
 
-        return mapper.Map<PagedListDto<QuestionResponse>>(questions);
+        return questions.ToPagedListDto(q => q.ToResponse());
     }
 }

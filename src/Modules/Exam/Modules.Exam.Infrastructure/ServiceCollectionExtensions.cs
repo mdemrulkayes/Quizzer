@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Modules.Exam.Core.ExamAggregate;
+using Modules.Exam.Infrastructure.BackgroundServices;
 using Modules.Exam.Infrastructure.Persistence;
 using Modules.Exam.Infrastructure.Persistence.Repositories;
 using Serilog;
@@ -36,12 +37,14 @@ public static class ServiceCollectionExtensions
 
         RegisterRepositories(services);
 
+        services.AddHostedService<ExpiredExamAttemptProcessor>();
+
         return services;
     }
 
     private static void RegisterRepositories(IServiceCollection services)
     {
-        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddKeyedScoped<IUnitOfWork, UnitOfWork>(ModuleKeys.Exam);
         services.AddScoped<IExamRepository, ExamRepository>();
         services.AddScoped<IExamAttemptRepository, ExamAttemptRepository>();
     }

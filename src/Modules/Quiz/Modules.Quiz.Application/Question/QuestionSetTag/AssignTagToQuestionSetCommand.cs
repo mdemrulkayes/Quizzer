@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Modules.Quiz.Application.Common.Extensions;
 using Modules.Quiz.Application.Tag.Dtos;
 using Modules.Quiz.Core.QuestionAggregate;
 using Modules.Quiz.Core.Tag;
@@ -11,8 +12,7 @@ public sealed record AssignTagToQuestionSetCommand(long QuestionSetId, long TagI
 internal sealed class AssignTagToQuestionSetCommandHandler(
     IQuestionSetRepository questionSetRepository,
     ITagRepository tagRepository,
-    IUnitOfWork unitOfWork,
-    IMapper mapper)
+    [FromKeyedServices(ModuleKeys.Quiz)] IUnitOfWork unitOfWork)
     : ICommandHandler<AssignTagToQuestionSetCommand, Result<TagResponse>>
 {
     public async Task<Result<TagResponse>> Handle(AssignTagToQuestionSetCommand request, CancellationToken cancellationToken)
@@ -32,6 +32,6 @@ internal sealed class AssignTagToQuestionSetCommandHandler(
         questionSetRepository.Update(questionSet);
         await unitOfWork.CommitAsync(cancellationToken);
 
-        return mapper.Map<TagResponse>(tag);
+        return tag.ToResponse();
     }
 }

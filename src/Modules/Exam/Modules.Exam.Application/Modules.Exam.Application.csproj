@@ -5,9 +5,6 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="AutoMapper" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\..\Shared\Shared.Application\Shared.Application.csproj" />
     <ProjectReference Include="..\Modules.Exam.Core\Modules.Exam.Core.csproj" />
     <ProjectReference Include="..\Modules.Exam.Infrastructure\Modules.Exam.Infrastructure.csproj" />

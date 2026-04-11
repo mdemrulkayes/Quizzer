@@ -1,12 +1,13 @@
 ﻿using System.Linq.Expressions;
-using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using Modules.Quiz.Application.Common.Extensions;
 using Modules.Quiz.Application.Question.QuestionSet.Dtos;
 using Modules.Quiz.Core.QuestionAggregate;
 using Shared.Application;
 using Shared.Core;
 
 namespace Modules.Quiz.Application.Question.QuestionSet.Query;
-internal sealed class GetAllQuestionSetQueryHandler(IQuestionSetRepository repository, IMapper mapper)
+internal sealed class GetAllQuestionSetQueryHandler(IQuestionSetRepository repository)
     : IQueryHandler<GetAllQuestionSetQuery, Result<PagedListDto<QuestionSetResponse>>>
 {
     public async Task<Result<PagedListDto<QuestionSetResponse>>> Handle(GetAllQuestionSetQuery request, CancellationToken cancellationToken)
@@ -30,11 +31,15 @@ internal sealed class GetAllQuestionSetQueryHandler(IQuestionSetRepository repos
 
         var sets = await repository.GetAllAsync(
             expression: filter,
+            include: q => q
+                .Include(qs => qs.Questions)
+                    .ThenInclude(question => question.Options)
+                .Include(qs => qs.QuestionSetTags),
             pageNumber: request.PageNumber,
             pageSize: request.PageSize,
             cancellationToken: cancellationToken);
 
-        return mapper.Map<PagedListDto<QuestionSetResponse>>(sets);
+        return sets.ToPagedListDto(s => s.ToResponse());
     }
 
     private static Expression<Func<T, bool>> CombineExpressions<T>(

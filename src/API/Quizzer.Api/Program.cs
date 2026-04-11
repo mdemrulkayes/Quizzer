@@ -31,8 +31,6 @@ try
         loggerConfiguration.ReadFrom.Configuration(builder.Configuration);
         loggerConfiguration.WriteTo.Elasticsearch();
     });
-    builder.Services.AddEndpointsApiExplorer(); //TODO: Need to replace with FastEndpoints library configuration
-
     builder.Services.AddScoped<IUser, CurrentUser>();
     builder.Services.AddHttpContextAccessor();
 
@@ -43,7 +41,7 @@ try
 
     List<Assembly> mediatRAssemblies = [typeof(Quizzer.Api.Program).Assembly];
 
-    builder.Services.RegisterSharedInfrastructureModule();
+    builder.Services.RegisterSharedInfrastructureModule(builder.Configuration);
     builder.Services.RegisterIdentityModule(builder.Configuration, logger, mediatRAssemblies);
     builder.Services.RegisterQuestionModule(builder.Configuration, logger, mediatRAssemblies);
     builder.Services.RegisterExamEndpointsModule(builder.Configuration, logger, mediatRAssemblies);
@@ -60,12 +58,23 @@ try
 
     builder.Services.AddMediatRRequestLoggingBehaviour();
     builder.Services.AddMediatRFluentValidationBehaviour(mediatRAssemblies);
+    builder.Services.AddMediatRQueryCachingBehaviour();
 
     // Register OpenAPI documentation with Scalar UI
     builder.Services.AddOpenApiDocumentation();
 
     // Register health checks
-    builder.Services.AddHealthCheckServices();
+    builder.Services.AddHealthCheckServices(builder.Configuration);
+
+    builder.Services.AddCors(options =>
+    {
+        options.AddDefaultPolicy(policy =>
+        {
+            policy.AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader();
+        });
+    });
 
     var app = builder.Build();
 
@@ -93,6 +102,7 @@ try
 
     app.MapEndpoints();
     app.MapHealthCheckEndpoints();
+    app.UseCors();
 
     app.Run();
 }

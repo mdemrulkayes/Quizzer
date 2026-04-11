@@ -1,8 +1,3 @@
-﻿using Modules.Exam.Core.ExamAggregate;
-
-namespace Modules.Exam.Application.Services;
-
-public interface IExamGradingService
-{
-    Task GradeAttemptAsync(ExamAttempt attempt, Core.ExamAggregate.Exam exam, CancellationToken cancellationToken = default);
-}
+﻿// Interface moved to Modules.Exam.Core.Services.IExamGradingService
+// This file kept for backward compatibility — re-exports the Core interface
+global using Modules.Exam.Core.Services;

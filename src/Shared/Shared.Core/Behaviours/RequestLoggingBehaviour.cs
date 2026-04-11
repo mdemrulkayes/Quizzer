@@ -9,6 +9,15 @@ internal sealed class RequestLoggingBehaviour<TRequest, TResponse>(ILogger<Reque
 where TRequest : notnull
 where TResponse : IBaseResult
 {
+    private static readonly HashSet<string> SensitivePropertyNames = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "password", "confirmpassword", "currentpassword", "newpassword", "confirmnewpassword",
+        "token", "accesstoken", "refreshtoken",
+        "secret", "key", "apikey",
+        "creditcard", "cardnumber", "cvv",
+        "connectionstring"
+    };
+
     public async Task<TResponse> Handle(TRequest request,
         RequestHandlerDelegate<TResponse> next,
         CancellationToken cancellationToken = default)
@@ -22,8 +31,16 @@ where TResponse : IBaseResult
             var props = new List<PropertyInfo>(requestType.GetProperties());
             foreach (var propertyInfo in props)
             {
-                var propValue = propertyInfo?.GetValue(request, null);
-                logger.LogInformation("Property {PropertyName}: {PropertyValue}", propertyInfo?.Name, propValue);
+                if (propertyInfo is null) continue;
+
+                if (SensitivePropertyNames.Contains(propertyInfo.Name))
+                {
+                    logger.LogInformation("Property {PropertyName}: [REDACTED]", propertyInfo.Name);
+                    continue;
+                }
+
+                var propValue = propertyInfo.GetValue(request, null);
+                logger.LogInformation("Property {PropertyName}: {PropertyValue}", propertyInfo.Name, propValue);
             }
         }
 
@@ -31,7 +48,7 @@ where TResponse : IBaseResult
 
         var response = await next();
 
-        logger.LogInformation("Handled {RequestName} with {Response} in {ms} ms", requestName, response, stopWatch.ElapsedMilliseconds);
+        logger.LogInformation("Handled {RequestName} in {ms} ms", requestName, stopWatch.ElapsedMilliseconds);
         stopWatch.Stop();
 
         if (response.IsSuccess) return response;

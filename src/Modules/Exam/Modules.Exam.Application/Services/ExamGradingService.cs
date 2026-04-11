@@ -1,36 +1,23 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Modules.Exam.Core.ExamAggregate;
-using Modules.Exam.Infrastructure.Persistence;
+﻿using Modules.Exam.Core.ExamAggregate;
+using Modules.Exam.Core.Services;
+using Shared.Core.ModuleServices;
 
 namespace Modules.Exam.Application.Services;
 
-internal sealed class ExamGradingService(ExamModuleDbContext dbContext) : IExamGradingService
+internal sealed class ExamGradingService(IQuestionQueryService questionQueryService) : IExamGradingService
 {
     public async Task GradeAttemptAsync(ExamAttempt attempt, Core.ExamAggregate.Exam exam, CancellationToken cancellationToken = default)
     {
-        // Fetch correct answers from the Question module schema
-        var correctOptionIds = await dbContext.Database
-            .SqlQueryRaw<CorrectOptionRow>(
-                @"SELECT qo.QuestionOptionId, qo.QuestionId
-                  FROM [Question].[QuestionOptions] qo
-                  INNER JOIN [Question].[Questions] q ON qo.QuestionId = q.QuestionId
-                  WHERE q.QuestionSetId = {0} AND qo.IsAnswer = 1 AND qo.IsDeleted = 0 AND q.IsDeleted = 0",
-                exam.QuestionSetId)
-            .ToListAsync(cancellationToken);
+        // Fetch correct answers via IQuestionQueryService (no cross-schema SQL)
+        var correctAnswers = await questionQueryService.GetCorrectAnswersBySetIdAsync(exam.QuestionSetId, cancellationToken);
 
-        var correctByQuestion = correctOptionIds
+        var correctByQuestion = correctAnswers
             .GroupBy(c => c.QuestionId)
             .ToDictionary(g => g.Key, g => g.Select(c => c.QuestionOptionId).ToHashSet());
 
         // Fetch question marks
-        var questionMarks = await dbContext.Database
-            .SqlQueryRaw<QuestionMarkRow>(
-                @"SELECT QuestionId, QuestionMark FROM [Question].[Questions] 
-                  WHERE QuestionSetId = {0} AND IsDeleted = 0",
-                exam.QuestionSetId)
-            .ToListAsync(cancellationToken);
-
-        var marksByQuestion = questionMarks.ToDictionary(q => q.QuestionId, q => q.QuestionMark ?? 1);
+        var questions = await questionQueryService.GetQuestionsBySetIdAsync(exam.QuestionSetId, cancellationToken);
+        var marksByQuestion = questions.ToDictionary(q => q.QuestionId, q => q.QuestionMark ?? 1);
 
         var totalScore = 0;
 
@@ -55,16 +42,4 @@ internal sealed class ExamGradingService(ExamModuleDbContext dbContext) : IExamG
 
         attempt.SetGradingResult(totalScore, totalScore >= exam.PassingMarks);
     }
-}
-
-internal sealed class CorrectOptionRow
-{
-    public long QuestionOptionId { get; set; }
-    public long QuestionId { get; set; }
-}
-
-internal sealed class QuestionMarkRow
-{
-    public long QuestionId { get; set; }
-    public int? QuestionMark { get; set; }
 }
