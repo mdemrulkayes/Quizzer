@@ -1,7 +1,7 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, tap, catchError, of } from 'rxjs';
+import { Observable, tap, catchError, of, switchMap } from 'rxjs';
 import {
   AccessTokenResponse,
   ChangePasswordRequest,
@@ -14,13 +14,16 @@ import {
 } from '../models';
 import { environment } from '../../../environments/environment';
 
+const ACCESS_TOKEN_KEY = 'accessToken';
+const REFRESH_TOKEN_KEY = 'refreshToken';
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
 
-  private readonly _accessToken = signal<string | null>(null);
-  private readonly _refreshToken = signal<string | null>(localStorage.getItem('refreshToken'));
+  private readonly _accessToken = signal<string | null>(localStorage.getItem(ACCESS_TOKEN_KEY));
+  private readonly _refreshToken = signal<string | null>(localStorage.getItem(REFRESH_TOKEN_KEY));
   private readonly _currentUser = signal<UserProfile | null>(null);
   private readonly _isInitialized = signal(false);
 
@@ -69,13 +72,14 @@ export class AuthService {
     this._accessToken.set(null);
     this._refreshToken.set(null);
     this._currentUser.set(null);
-    localStorage.removeItem('refreshToken');
+    localStorage.removeItem(ACCESS_TOKEN_KEY);
+    localStorage.removeItem(REFRESH_TOKEN_KEY);
     this.router.navigate(['/auth/login']);
   }
 
   refreshAccessToken(): Observable<AccessTokenResponse | null> {
-    const currentToken = this._accessToken();
-    const refreshToken = this._refreshToken();
+    const currentToken = this._accessToken() ?? localStorage.getItem(ACCESS_TOKEN_KEY);
+    const refreshToken = this._refreshToken() ?? localStorage.getItem(REFRESH_TOKEN_KEY);
     if (!currentToken || !refreshToken) {
       this.logout();
       return of(null);
@@ -105,25 +109,65 @@ export class AuthService {
     return this.http.put(`${environment.apiBaseUrl}/identity/change-password`, request);
   }
 
+  /**
+   * Restores session from stored tokens on app startup.
+   * Tries loading profile with stored access token; if 401, refreshes then retries.
+   */
   tryRestoreSession(): Observable<boolean> {
-    const refreshToken = localStorage.getItem('refreshToken');
-    if (!refreshToken) {
+    const accessToken = localStorage.getItem(ACCESS_TOKEN_KEY);
+    const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
+
+    if (!accessToken || !refreshToken) {
+      this.clearStoredTokens();
       this._isInitialized.set(true);
       return of(false);
     }
-    // We don't have the access token in memory after refresh, so we can't restore.
-    // User must log in again. But we try to use refresh token if we had one stored.
-    this._isInitialized.set(true);
-    return of(false);
+
+    this._accessToken.set(accessToken);
+    this._refreshToken.set(refreshToken);
+
+    return this.loadProfile().pipe(
+      switchMap(() => {
+        this._isInitialized.set(true);
+        return of(true);
+      }),
+      catchError(() => {
+        // Access token likely expired — try refreshing
+        return this.refreshAccessToken().pipe(
+          switchMap((result) => {
+            if (result) {
+              return this.loadProfile().pipe(
+                switchMap(() => {
+                  this._isInitialized.set(true);
+                  return of(true);
+                }),
+                catchError(() => {
+                  this.clearStoredTokens();
+                  this._isInitialized.set(true);
+                  return of(false);
+                }),
+              );
+            }
+            this.clearStoredTokens();
+            this._isInitialized.set(true);
+            return of(false);
+          }),
+        );
+      }),
+    );
   }
 
   private handleAuthResponse(response: AccessTokenResponse): void {
     this._accessToken.set(response.token);
     this._refreshToken.set(response.refreshToken);
-    localStorage.setItem('refreshToken', response.refreshToken);
+    localStorage.setItem(ACCESS_TOKEN_KEY, response.token);
+    localStorage.setItem(REFRESH_TOKEN_KEY, response.refreshToken);
   }
 
-  initialize(): void {
-    this._isInitialized.set(true);
+  private clearStoredTokens(): void {
+    this._accessToken.set(null);
+    this._refreshToken.set(null);
+    localStorage.removeItem(ACCESS_TOKEN_KEY);
+    localStorage.removeItem(REFRESH_TOKEN_KEY);
   }
 }
