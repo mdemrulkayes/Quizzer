@@ -6,13 +6,16 @@ using Modules.Identity.Constants;
 using Modules.Identity.Features.ChangePassword;
 using Modules.Identity.Features.Login;
 using Quizzer.Api.FunctionalTest.Abstraction;
+using Xunit.Abstractions;
 
 namespace Quizzer.Api.FunctionalTest.Modules.Identity.Features.ChangePassword;
 
 public class ChangePasswordEndpointTest : QuizzerBaseFunctionTest
 {
-    public ChangePasswordEndpointTest(QuizzerWebApiFactory factory) : base(factory)
+    private readonly ITestOutputHelper _output;
+    public ChangePasswordEndpointTest(QuizzerWebApiFactory factory, ITestOutputHelper output) : base(factory)
     {
+        _output = output;
         RegisterOneTimeUser().Wait();
     }
 
@@ -23,6 +26,8 @@ public class ChangePasswordEndpointTest : QuizzerBaseFunctionTest
         var loginResponse = await HttpClient.PostAsJsonAsync(
             IdentityModuleConstants.Route.Login,
             new LoginCommand("test1@gmail.com", "Aa123456#"));
+
+        _output.WriteLine("Login response: {0}", await loginResponse.Content.ReadAsStringAsync());
         var loginContent = await loginResponse.Content.ReadFromJsonAsync<AccessTokenResponse>();
         HttpClient.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue("Bearer", loginContent!.Token);
@@ -31,6 +36,7 @@ public class ChangePasswordEndpointTest : QuizzerBaseFunctionTest
         var changePasswordResponse = await HttpClient.PutAsJsonAsync(
             IdentityModuleConstants.Route.ChangePassword,
             new ChangePasswordCommand("Aa123456#", "NewPass123#", "NewPass123#"));
+        _output.WriteLine("Change password response: {0}", await changePasswordResponse.Content.ReadAsStringAsync());
 
         // Assert
         changePasswordResponse.StatusCode.Should().Be(HttpStatusCode.OK);
