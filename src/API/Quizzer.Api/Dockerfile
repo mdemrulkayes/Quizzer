@@ -2,7 +2,7 @@
 
 # This stage is used when running from VS in fast mode (Default for Debug configuration)
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
-USER app
+USER $APP_UID
 WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
@@ -12,6 +12,7 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
+COPY ["Directory.Packages.props", "."]
 COPY ["src/API/Quizzer.Api/Quizzer.Api.csproj", "src/API/Quizzer.Api/"]
 COPY ["src/Modules/Identity/Modules.Identity/Modules.Identity.csproj", "src/Modules/Identity/Modules.Identity/"]
 COPY ["src/Shared/Shared.Core/Shared.Core.csproj", "src/Shared/Shared.Core/"]
@@ -21,6 +22,10 @@ COPY ["src/Modules/Quiz/Modules.Quiz.Application/Modules.Quiz.Application.csproj
 COPY ["src/Shared/Shared.Application/Shared.Application.csproj", "src/Shared/Shared.Application/"]
 COPY ["src/Modules/Quiz/Modules.Quiz.Core/Modules.Quiz.Core.csproj", "src/Modules/Quiz/Modules.Quiz.Core/"]
 COPY ["src/Modules/Quiz/Modules.Quiz.Infrastructure/Modules.Quiz.Infrastructure.csproj", "src/Modules/Quiz/Modules.Quiz.Infrastructure/"]
+COPY ["src/Modules/Exam/Modules.Exam.Endpoints/Modules.Exam.Endpoints.csproj", "src/Modules/Exam/Modules.Exam.Endpoints/"]
+COPY ["src/Modules/Exam/Modules.Exam.Application/Modules.Exam.Application.csproj", "src/Modules/Exam/Modules.Exam.Application/"]
+COPY ["src/Modules/Exam/Modules.Exam.Core/Modules.Exam.Core.csproj", "src/Modules/Exam/Modules.Exam.Core/"]
+COPY ["src/Modules/Exam/Modules.Exam.Infrastructure/Modules.Exam.Infrastructure.csproj", "src/Modules/Exam/Modules.Exam.Infrastructure/"]
 RUN dotnet restore "./src/API/Quizzer.Api/Quizzer.Api.csproj"
 COPY . .
 WORKDIR "/src/src/API/Quizzer.Api"
