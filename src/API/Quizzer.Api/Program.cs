@@ -60,7 +60,7 @@ try
     builder.Services.AddMediatRFluentValidationBehaviour(mediatRAssemblies);
     builder.Services.AddMediatRQueryCachingBehaviour();
 
-    // Register OpenAPI documentation with Scalar UI
+    // Register OpenAPI documentation with Swagger UI
     builder.Services.AddOpenApiDocumentation();
 
     // Register health checks
