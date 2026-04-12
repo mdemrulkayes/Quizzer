@@ -14,8 +14,7 @@ namespace Quizzer.Api.FunctionalTest.Abstraction;
 public class QuizzerWebApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
 
-    private readonly MsSqlContainer _msSqlContainer = new MsSqlBuilder()
-        .WithImage("mcr.microsoft.com/mssql/server:2022-latest")
+    private readonly MsSqlContainer _msSqlContainer = new MsSqlBuilder("mcr.microsoft.com/mssql/server:2022-latest")
         .WithPassword("Pass@word")
         .Build();
     protected override void ConfigureWebHost(IWebHostBuilder builder)
