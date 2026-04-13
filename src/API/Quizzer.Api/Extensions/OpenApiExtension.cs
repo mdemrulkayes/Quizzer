@@ -1,5 +1,4 @@
 ﻿using Microsoft.OpenApi;
-using System.Reflection.Metadata;
 
 namespace Quizzer.Api.Extensions;
 
