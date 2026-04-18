@@ -124,7 +124,7 @@ public class QuestionSetVisibilityEndpointTest : QuizzerBaseFunctionTest
         setCode ??= $"VIS-{Guid.NewGuid():N}"[..10];
         var questionCommands = new List<CreateQuestionCommand>
         {
-            new("Sample Question", "Question details", 5,
+            new($"{Guid.NewGuid():N}", "Question details", 5,
             [
                 new("Option A", false),
                 new("Option B", true),
@@ -132,7 +132,7 @@ public class QuestionSetVisibilityEndpointTest : QuizzerBaseFunctionTest
                 new("Option D", false),
             ]),
         };
-        var createCmd = new CreateQuestionSetCommand("Visibility Test Set", setCode, "Test description", questionCommands);
+        var createCmd = new CreateQuestionSetCommand($"{Guid.NewGuid():N}", setCode, "Test description", questionCommands);
         var response = await HttpClient.PostAsJsonAsync(
             QuestionModuleConstants.Route.QuestionSetRoute.CreateQuestionSet, createCmd);
         _testOutputHelper.WriteLine("CreateTestQuestionSet Response: {0}", await response.Content.ReadAsStringAsync());
