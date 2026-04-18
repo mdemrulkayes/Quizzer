@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Modules.Quiz.Core.Enums;
 using Modules.Quiz.Core.QuestionAggregate;
 
 namespace Modules.Quiz.Infrastructure.Data.Configuration;
@@ -21,6 +22,21 @@ internal sealed class QuestionSetConfiguration : IEntityTypeConfiguration<Questi
 
         builder.Property(x => x.SetCode)
             .HasMaxLength(10);
+
+        builder.Property(x => x.Source)
+            .HasConversion<int>()
+            .HasDefaultValue(QuestionSetSource.Manual);
+
+        builder.Property(x => x.IsPublic)
+            .HasDefaultValue(false);
+
+        builder.Property(x => x.Complexity)
+            .HasConversion<int?>();
+
+        builder.Property(x => x.ExperienceYears);
+
+        builder.Property(x => x.ExpertiseFields)
+            .HasMaxLength(1000);
 
         builder.HasMany(x => x.Questions)
             .WithOne(x => x.QuestionSet)

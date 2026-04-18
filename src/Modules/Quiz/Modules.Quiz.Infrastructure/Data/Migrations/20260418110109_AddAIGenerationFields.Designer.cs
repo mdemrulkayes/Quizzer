@@ -3,17 +3,20 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Modules.Quiz.Infrastructure.Data;
 
 #nullable disable
 
-namespace Modules.Question.Infrastructure.Data.Migrations
+namespace Modules.Quiz.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(QuestionModuleDbContext))]
-    partial class QuestionModuleDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260418110109_AddAIGenerationFields")]
+    partial class AddAIGenerationFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

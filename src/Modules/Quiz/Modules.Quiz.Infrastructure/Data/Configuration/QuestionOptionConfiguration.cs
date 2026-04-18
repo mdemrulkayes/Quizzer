@@ -14,6 +14,9 @@ internal sealed class QuestionOptionConfiguration : IEntityTypeConfiguration<Que
             .HasMaxLength(200)
             .IsRequired();
 
+        builder.Property(x => x.OptionIdentifier)
+            .HasMaxLength(5);
+
         builder.HasQueryFilter(x => x.DeletedDate == null);
     }
 }
