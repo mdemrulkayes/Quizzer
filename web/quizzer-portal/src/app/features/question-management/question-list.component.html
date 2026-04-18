@@ -105,7 +105,7 @@
   header="Edit Question"
   [(visible)]="displayDialog"
   [modal]="true"
-  [style]="{ width: '550px' }"
+  [style]="{ width: 'min(90vw, 860px)' }"
   [closable]="true"
 >
   <form [formGroup]="questionForm" (ngSubmit)="saveQuestion()">
@@ -122,9 +122,44 @@
         <label for="editQMark" class="font-semibold text-[var(--p-text-color)]">Marks</label>
         <p-inputnumber id="editQMark" formControlName="mark" [min]="0" [showButtons]="true" class="w-full" />
       </div>
+      <!-- Options -->
+      <div class="flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <label class="font-semibold text-[var(--p-text-color)]">Options</label>
+          <p-button label="Add Option" icon="pi pi-plus" size="small" [text]="true" type="button" (onClick)="addOption()" />
+        </div>
+        <div formArrayName="options" class="flex flex-col gap-2">
+          @for (ctrl of optionsFormArray.controls; track $index; let i = $index) {
+            <div [formGroupName]="i" class="flex items-center gap-2">
+              <p-button
+                [icon]="ctrl.value.isCorrect ? 'pi pi-check-circle' : 'pi pi-circle'"
+                [text]="true"
+                [rounded]="true"
+                [severity]="ctrl.value.isCorrect ? 'success' : 'secondary'"
+                size="small"
+                type="button"
+                pTooltip="Mark as correct answer"
+                (onClick)="setCorrect(i)"
+              />
+              <input pInputText formControlName="optionText" placeholder="Option text" class="flex-1" />
+              <p-button
+                icon="pi pi-trash"
+                [text]="true"
+                [rounded]="true"
+                severity="danger"
+                size="small"
+                type="button"
+                (onClick)="removeOption(i)"
+              />
+            </div>
+          } @empty {
+            <p class="text-[var(--p-text-muted-color)] text-sm">No options. Click "Add Option" to add one.</p>
+          }
+        </div>
+      </div>
     </div>
     <div class="flex justify-end gap-2 mt-6">
-      <p-button label="Cancel" severity="secondary" [text]="true" (onClick)="displayDialog = false" />
+      <p-button label="Cancel" severity="secondary" [text]="true" type="button" (onClick)="displayDialog = false" />
       <p-button label="Save" icon="pi pi-check" type="submit" [disabled]="questionForm.invalid" />
     </div>
   </form>

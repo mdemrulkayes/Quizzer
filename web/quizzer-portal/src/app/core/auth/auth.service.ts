@@ -105,6 +105,12 @@ export class AuthService {
     );
   }
 
+  updateProfile(firstName: string, lastName: string): Observable<UserProfile> {
+    return this.http.put<UserProfile>(`${environment.apiBaseUrl}/identity/profile`, { firstName, lastName }).pipe(
+      tap((profile) => this._currentUser.set(profile)),
+    );
+  }
+
   changePassword(request: ChangePasswordRequest): Observable<any> {
     return this.http.put(`${environment.apiBaseUrl}/identity/change-password`, request);
   }

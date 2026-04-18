@@ -1,5 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using Shared.Core;
+﻿using Shared.Core;
 
 namespace Modules.Quiz.Core.QuestionAggregate;
 public sealed class Question : BaseAuditableEntity
@@ -13,7 +12,7 @@ public sealed class Question : BaseAuditableEntity
     public long QuestionSetId { get; private set; }
     public QuestionSet? QuestionSet { get; private set; }
 
-    public IReadOnlyCollection<QuestionOption> Options => new ReadOnlyCollection<QuestionOption>(_questionOptions);
+    public IReadOnlyCollection<QuestionOption> Options => _questionOptions;
 
     internal List<QuestionOption> _questionOptions = [];
 

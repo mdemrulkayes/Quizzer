@@ -53,4 +53,10 @@ public sealed class ApplicationUser : IdentityUser<Guid>, IUpdatedAuditableEntit
         LastLoginTime = timeProvider.TimeNow;
         UpdatedDate = timeProvider.TimeNow;
     }
+
+    internal void UpdateProfile(string firstName, string lastName)
+    {
+        FirstName = firstName;
+        LastName = lastName;
+    }
 }

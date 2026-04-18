@@ -19,11 +19,13 @@ internal sealed class UpdateUserRoleCommandValidator : AbstractValidator<UpdateU
             .NotEmpty()
             .WithMessage("User ID is required");
 
-        RuleFor(x => x.RoleName)
+        RuleFor(x => x.RoleNames)
             .NotNull()
             .NotEmpty()
-            .WithMessage("Role name is required")
+            .WithMessage("At least one role is required");
+
+        RuleForEach(x => x.RoleNames)
             .Must(role => ValidRoles.Contains(role))
-            .WithMessage($"Role must be one of: {string.Join(", ", ValidRoles)}");
+            .WithMessage($"Each role must be one of: {string.Join(", ", ValidRoles)}");
     }
 }

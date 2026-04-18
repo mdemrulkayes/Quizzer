@@ -1,10 +1,18 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Modules.Quiz.Core.QuestionAggregate;
 using Shared.Core;
+using Shared.Core.Caching;
 
 namespace Modules.Quiz.Application.Question.QuestionSetTag;
 
-public sealed record RemoveTagFromQuestionSetCommand(long QuestionSetId, long TagId) : ICommand<Result<bool>>;
+public sealed record RemoveTagFromQuestionSetCommand(long QuestionSetId, long TagId) : ICommand<Result<bool>>, ICacheInvalidatingCommand
+{
+    public string[] CacheKeysToInvalidate =>
+    [
+        $"{CacheKeys.QuestionSets}:all:",
+        $"{CacheKeys.QuestionSets}:id:{QuestionSetId}",
+    ];
+}
 
 internal sealed class RemoveTagFromQuestionSetCommandHandler(
     IQuestionSetRepository questionSetRepository,

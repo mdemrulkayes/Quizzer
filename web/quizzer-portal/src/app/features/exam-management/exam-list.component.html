@@ -68,7 +68,7 @@
   [header]="editingExam() ? 'Edit Exam' : 'Create Exam'"
   [(visible)]="dialogVisible"
   [modal]="true"
-  [style]="{ width: '36rem' }"
+  [style]="{ width: 'min(90vw, 860px)' }"
   (onHide)="onDialogHide()"
 >
   <form [formGroup]="form" (ngSubmit)="onSave()">

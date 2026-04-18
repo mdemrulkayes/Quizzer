@@ -52,13 +52,15 @@ export const errorInterceptor: HttpInterceptorFn = (
           summary: 'Server Error',
           detail: 'An unexpected error occurred. Please try again later.',
         });
+      } else if (error.status === 404) {
+        const detail = error.error?.detail || error.error?.title || 'Resource not found.';
+        messageService.add({ severity: 'warn', summary: 'Not Found', detail });
       } else if (error.status === 400) {
-        const detail = error.error?.description || error.error?.title || 'Invalid request.';
-        messageService.add({
-          severity: 'warn',
-          summary: 'Validation Error',
-          detail,
-        });
+        const errors = error.error?.extensions?.errors as string[] | undefined;
+        const detail = errors?.length
+          ? errors.join(' ')
+          : (error.error?.detail || error.error?.title || 'Invalid request.');
+        messageService.add({ severity: 'warn', summary: 'Validation Error', detail });
       }
 
       return throwError(() => error);

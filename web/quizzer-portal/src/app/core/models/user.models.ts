@@ -29,5 +29,5 @@ export interface UserDetailResponse {
 }
 
 export interface UpdateUserRoleRequest {
-  roleName: string;
+  roleNames: string[];
 }

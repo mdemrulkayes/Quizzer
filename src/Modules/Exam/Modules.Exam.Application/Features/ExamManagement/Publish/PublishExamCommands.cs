@@ -7,12 +7,12 @@ namespace Modules.Exam.Application.Features.ExamManagement.Publish;
 
 public sealed record PublishExamCommand(long ExamId) : ICommand<Result<bool>>, ICacheInvalidatingCommand
 {
-    public string[] CacheKeysToInvalidate => [$"{CacheKeys.Exams}:id:{ExamId}"];
+    public string[] CacheKeysToInvalidate => [$"{CacheKeys.Exams}:all:", $"{CacheKeys.Exams}:id:{ExamId}"];
 }
 
 public sealed record UnpublishExamCommand(long ExamId) : ICommand<Result<bool>>, ICacheInvalidatingCommand
 {
-    public string[] CacheKeysToInvalidate => [$"{CacheKeys.Exams}:id:{ExamId}"];
+    public string[] CacheKeysToInvalidate => [$"{CacheKeys.Exams}:all:", $"{CacheKeys.Exams}:id:{ExamId}"];
 }
 
 internal sealed class PublishExamCommandHandler(

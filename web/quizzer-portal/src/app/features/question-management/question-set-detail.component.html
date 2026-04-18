@@ -94,7 +94,7 @@
   [header]="editingQuestion() ? 'Edit Question' : 'New Question'"
   [(visible)]="displayQuestionDialog"
   [modal]="true"
-  [style]="{ width: '650px' }"
+  [style]="{ width: 'min(90vw, 860px)' }"
   [closable]="true"
 >
   <form [formGroup]="questionForm" (ngSubmit)="saveQuestion()">

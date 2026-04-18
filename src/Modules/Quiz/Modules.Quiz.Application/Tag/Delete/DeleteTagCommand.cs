@@ -4,5 +4,5 @@ using Shared.Core.Caching;
 namespace Modules.Quiz.Application.Tag.Delete;
 public sealed record DeleteTagCommand(long TagId) : ICommand<Result<bool>>, ICacheInvalidatingCommand
 {
-    public string[] CacheKeysToInvalidate => [$"{CacheKeys.Tags}:id:{TagId}"];
+    public string[] CacheKeysToInvalidate => [$"{CacheKeys.Tags}:all:", $"{CacheKeys.Tags}:id:{TagId}"];
 }

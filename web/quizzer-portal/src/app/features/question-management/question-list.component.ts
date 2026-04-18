@@ -1,5 +1,6 @@
 import { Component, ChangeDetectionStrategy, inject, signal, OnInit } from '@angular/core';
-import { FormsModule, ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormArray, FormGroup, Validators } from '@angular/forms';
+import { forkJoin, of } from 'rxjs';
 import { QuizService } from '../../core/services/quiz.service';
 import { QuestionResponse, QuestionSetResponse } from '../../core/models';
 import { MessageService, ConfirmationService } from 'primeng/api';
@@ -57,15 +58,20 @@ export class QuestionListComponent implements OnInit {
   pageSize = 10;
   private currentPage = 1;
   private searchTimeout: ReturnType<typeof setTimeout> | null = null;
+  private deletedOptionIds: number[] = [];
 
   questionForm = this.fb.group({
     question: ['', Validators.required],
     details: [''],
     mark: [null as number | null],
+    options: this.fb.array<FormGroup>([]),
   });
 
+  get optionsFormArray(): FormArray<FormGroup> {
+    return this.questionForm.get('options') as FormArray<FormGroup>;
+  }
+
   ngOnInit(): void {
-    this.loadQuestions();
     this.loadQuestionSets();
   }
 
@@ -92,28 +98,57 @@ export class QuestionListComponent implements OnInit {
 
   editQuestion(q: QuestionResponse): void {
     this.editingQuestionId = q.questionId;
+    this.deletedOptionIds = [];
     this.questionForm.patchValue({
       question: q.question,
       details: q.details,
       mark: q.mark,
     });
+    this.optionsFormArray.clear();
+    for (const opt of q.questionOptions ?? []) {
+      this.optionsFormArray.push(this.fb.group({
+        optionId: [opt.questionOptionId],
+        optionText: [opt.optionText, Validators.required],
+        isCorrect: [opt.isCorrect],
+      }));
+    }
     this.displayDialog = true;
+  }
+
+  addOption(): void {
+    this.optionsFormArray.push(this.fb.group({
+      optionId: [null],
+      optionText: ['', Validators.required],
+      isCorrect: [false],
+    }));
+  }
+
+  removeOption(index: number): void {
+    const optionId = this.optionsFormArray.at(index).value.optionId as number | null;
+    if (optionId) {
+      this.deletedOptionIds.push(optionId);
+    }
+    this.optionsFormArray.removeAt(index);
+  }
+
+  setCorrect(index: number): void {
+    this.optionsFormArray.controls.forEach((ctrl, i) => {
+      ctrl.patchValue({ isCorrect: i === index });
+    });
   }
 
   saveQuestion(): void {
     if (this.questionForm.invalid || !this.editingQuestionId) return;
     const { question, details, mark } = this.questionForm.value;
-    this.quizService.updateQuestion(this.editingQuestionId, {
-      questionId: this.editingQuestionId,
+    const questionId = this.editingQuestionId;
+
+    this.quizService.updateQuestion(questionId, {
+      questionId,
       question: question!,
       details: details ?? '',
       mark: mark ?? null,
     }).subscribe({
-      next: () => {
-        this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Question updated.' });
-        this.displayDialog = false;
-        this.loadQuestions();
-      },
+      next: () => this.syncOptions(questionId),
       error: () => {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to update question.' });
       },
@@ -143,6 +178,37 @@ export class QuestionListComponent implements OnInit {
   truncate(text: string | null, max: number): string {
     if (!text) return '\u2014';
     return text.length > max ? text.substring(0, max) + '...' : text;
+  }
+
+  private syncOptions(questionId: number): void {
+    type OptionValue = { optionId: number | null; optionText: string; isCorrect: boolean };
+    const options = this.optionsFormArray.value as OptionValue[];
+
+    const deleteOps = this.deletedOptionIds.map(id =>
+      this.quizService.deleteOption(questionId, id)
+    );
+    const updateOps = options
+      .filter(o => o.optionId != null)
+      .map(o => this.quizService.updateOption(questionId, o.optionId!, { optionText: o.optionText, isAnswer: o.isCorrect }));
+    const addOps = options
+      .filter(o => o.optionId == null)
+      .map(o => this.quizService.addOption(questionId, { optionText: o.optionText, isAnswer: o.isCorrect }));
+
+    const allOps = [...deleteOps, ...updateOps, ...addOps];
+
+    (allOps.length ? forkJoin(allOps) : of([])).subscribe({
+      next: () => this.finishSave(),
+      error: () => {
+        this.messageService.add({ severity: 'warn', summary: 'Warning', detail: 'Question saved but some option changes failed.' });
+        this.finishSave();
+      },
+    });
+  }
+
+  private finishSave(): void {
+    this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Question updated.' });
+    this.displayDialog = false;
+    this.loadQuestions();
   }
 
   private loadQuestions(): void {

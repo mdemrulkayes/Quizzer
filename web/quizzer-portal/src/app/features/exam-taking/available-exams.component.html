@@ -46,7 +46,7 @@
   [visible]="dialogVisible()"
   [modal]="true"
   [closable]="true"
-  [style]="{ width: '450px' }"
+  [style]="{ width: 'min(90vw, 860px)' }"
   (visibleChange)="onDialogVisibleChange($event)"
 >
   @if (selectedExam(); as exam) {

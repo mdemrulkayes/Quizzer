@@ -7,7 +7,7 @@ namespace Modules.Exam.Application.Features.ExamManagement.Delete;
 
 public sealed record DeleteExamCommand(long ExamId) : ICommand<Result<bool>>, ICacheInvalidatingCommand
 {
-    public string[] CacheKeysToInvalidate => [$"{CacheKeys.Exams}:id:{ExamId}"];
+    public string[] CacheKeysToInvalidate => [$"{CacheKeys.Exams}:all:", $"{CacheKeys.Exams}:id:{ExamId}"];
 }
 
 internal sealed class DeleteExamCommandHandler(

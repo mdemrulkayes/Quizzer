@@ -21,10 +21,11 @@ internal sealed class UpdateUserRoleCommandHandler(
             return UserManagementErrors.UserNotFound;
         }
 
-        var roleExists = await roleManager.RoleExistsAsync(command.RoleName);
-        if (!roleExists)
+        foreach (var roleName in command.RoleNames)
         {
-            return UserManagementErrors.InvalidRole;
+            var roleExists = await roleManager.RoleExistsAsync(roleName);
+            if (!roleExists)
+                return UserManagementErrors.InvalidRole;
         }
 
         var currentRoles = await userManager.GetRolesAsync(user);
@@ -38,14 +39,14 @@ internal sealed class UpdateUserRoleCommandHandler(
             }
         }
 
-        var addResult = await userManager.AddToRoleAsync(user, command.RoleName);
+        var addResult = await userManager.AddToRolesAsync(user, command.RoleNames);
         if (!addResult.Succeeded)
         {
             var errors = string.Join("; ", addResult.Errors.Select(e => e.Description));
             return UserManagementErrors.RoleAssignmentFailed(errors);
         }
 
-        logger.LogInformation("Role updated to {Role} for user {UserId}", command.RoleName, command.UserId);
+        logger.LogInformation("Roles updated to [{Roles}] for user {UserId}", string.Join(", ", command.RoleNames), command.UserId);
         return true;
     }
 }

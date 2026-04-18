@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, computed, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { SlicePipe } from '@angular/common';
@@ -46,7 +46,7 @@ import {
   templateUrl: './exam-list.component.html',
   styleUrl: './exam-list.component.scss',
 })
-export class ExamListComponent {
+export class ExamListComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly examService = inject(ExamService);
   private readonly quizService = inject(QuizService);
@@ -57,7 +57,7 @@ export class ExamListComponent {
   readonly exams = signal<ExamResponse[]>([]);
   readonly totalRecords = signal(0);
   readonly pageSize = signal(10);
-  readonly loading = signal(false);
+  readonly loading = signal(true);
   readonly saving = signal(false);
   readonly questionSets = signal<QuestionSetResponse[]>([]);
   readonly editingExam = signal<ExamResponse | null>(null);
@@ -77,6 +77,10 @@ export class ExamListComponent {
   });
 
   private currentPage = 1;
+
+  ngOnInit(): void {
+    this.loadQuestionSets();
+  }
 
   loadExams(pageNumber = 1, pageSize = 10): void {
     this.loading.set(true);
@@ -116,7 +120,6 @@ export class ExamListComponent {
     });
     this.form.controls.questionSetId.setValidators([Validators.required]);
     this.form.controls.questionSetId.updateValueAndValidity();
-    this.loadQuestionSets();
     this.dialogVisible = true;
   }
 

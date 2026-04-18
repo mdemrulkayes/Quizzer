@@ -60,7 +60,7 @@
   header="User Details"
   [(visible)]="displayDetailDialog"
   [modal]="true"
-  [style]="{ width: '480px' }"
+  [style]="{ width: 'min(90vw, 860px)' }"
   [closable]="true"
 >
   @if (selectedUser()) {
@@ -105,26 +105,27 @@
 
 <!-- Role Edit Dialog -->
 <p-dialog
-  header="Change User Role"
+  header="Change User Roles"
   [(visible)]="displayRoleDialog"
   [modal]="true"
-  [style]="{ width: '400px' }"
+  [style]="{ width: 'min(90vw, 860px)' }"
   [closable]="true"
 >
   @if (selectedUser()) {
     <div class="flex flex-col gap-4">
-      <p>Changing role for <strong>{{ selectedUser()!.firstName }} {{ selectedUser()!.lastName }}</strong></p>
-      <p-select
+      <p>Changing roles for <strong>{{ selectedUser()!.firstName }} {{ selectedUser()!.lastName }}</strong></p>
+      <p-multiselect
         [options]="roleOptions"
-        [(ngModel)]="selectedRole"
+        [(ngModel)]="selectedRoles"
         optionLabel="label"
         optionValue="value"
-        placeholder="Select a role"
+        placeholder="Select roles"
         class="w-full"
+        display="chip"
       />
       <div class="flex justify-end gap-2 mt-2">
         <p-button label="Cancel" severity="secondary" [text]="true" (onClick)="displayRoleDialog = false" />
-        <p-button label="Update Role" severity="warn" (onClick)="updateRole()" [disabled]="!selectedRole" />
+        <p-button label="Update Roles" severity="warn" (onClick)="updateRole()" [disabled]="!selectedRoles.length" />
       </div>
     </div>
   }

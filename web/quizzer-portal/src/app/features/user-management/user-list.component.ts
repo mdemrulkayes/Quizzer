@@ -9,7 +9,7 @@ import { TableModule, TableLazyLoadEvent } from 'primeng/table';
 import { Button } from 'primeng/button';
 import { Tag } from 'primeng/tag';
 import { Dialog } from 'primeng/dialog';
-import { Select } from 'primeng/select';
+import { MultiSelect } from 'primeng/multiselect';
 import { InputText } from 'primeng/inputtext';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { IconField } from 'primeng/iconfield';
@@ -25,7 +25,7 @@ import { InputIcon } from 'primeng/inputicon';
     Button,
     Tag,
     Dialog,
-    Select,
+    MultiSelect,
     InputText,
     ConfirmDialog,
     IconField,
@@ -50,7 +50,7 @@ export class UserListComponent implements OnInit {
   displayDetailDialog = false;
   displayRoleDialog = false;
   searchTerm = '';
-  selectedRole = '';
+  selectedRoles: string[] = [];
   pageSize = 10;
 
   private currentPage = 1;
@@ -102,22 +102,22 @@ export class UserListComponent implements OnInit {
 
   editRole(user: UserListItem): void {
     this.selectedUser.set(user);
-    this.selectedRole = user.roles.length > 0 ? user.roles[0] : '';
+    this.selectedRoles = [...user.roles];
     this.displayRoleDialog = true;
   }
 
   updateRole(): void {
     const user = this.selectedUser();
-    if (!user || !this.selectedRole) return;
+    if (!user || !this.selectedRoles.length) return;
 
-    this.identityService.updateUserRole(user.userId, { roleName: this.selectedRole }).subscribe({
+    this.identityService.updateUserRole(user.userId, { roleNames: this.selectedRoles }).subscribe({
       next: () => {
-        this.messageService.add({ severity: 'success', summary: 'Success', detail: 'User role updated successfully.' });
+        this.messageService.add({ severity: 'success', summary: 'Success', detail: 'User roles updated successfully.' });
         this.displayRoleDialog = false;
         this.loadUsers();
       },
       error: () => {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to update user role.' });
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to update user roles.' });
       },
     });
   }

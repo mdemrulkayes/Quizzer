@@ -54,7 +54,7 @@
   [header]="editingTag() ? 'Edit Tag' : 'New Tag'"
   [(visible)]="displayDialog"
   [modal]="true"
-  [style]="{ width: '450px' }"
+  [style]="{ width: 'min(90vw, 860px)' }"
   [closable]="true"
 >
   <form [formGroup]="tagForm" (ngSubmit)="saveTag()">

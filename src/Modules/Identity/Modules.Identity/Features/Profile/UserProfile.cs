@@ -14,6 +14,11 @@ internal sealed class UserProfile : IBaseEndpoint
             .MapGet(IdentityModuleConstants.Route.Profile, GetUserProfileDetails)
             .WithTags(IdentityModuleConstants.RouteTag.IdentityTagName)
             .RequireAuthorization();
+
+        routeBuilder
+            .MapPut(IdentityModuleConstants.Route.Profile, UpdateUserProfile)
+            .WithTags(IdentityModuleConstants.RouteTag.IdentityTagName)
+            .RequireAuthorization();
     }
 
     private async Task<IResult> GetUserProfileDetails(ISender sender)
@@ -22,5 +27,13 @@ internal sealed class UserProfile : IBaseEndpoint
         return userDetails.IsSuccess ?
             TypedResults.Ok(userDetails.Value) :
             userDetails.ConvertToProblemDetails();
+    }
+
+    private async Task<IResult> UpdateUserProfile(ISender sender, UpdateProfileCommand command)
+    {
+        var result = await sender.Send(command);
+        return result.IsSuccess ?
+            TypedResults.Ok(result.Value) :
+            result.ConvertToProblemDetails();
     }
 }

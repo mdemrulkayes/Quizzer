@@ -63,7 +63,6 @@ export class QuestionSetListComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.loadQuestionSets();
     this.loadTags();
   }
 

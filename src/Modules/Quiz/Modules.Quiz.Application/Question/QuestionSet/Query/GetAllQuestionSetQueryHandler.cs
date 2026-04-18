@@ -33,7 +33,6 @@ internal sealed class GetAllQuestionSetQueryHandler(IQuestionSetRepository repos
             expression: filter,
             include: q => q
                 .Include(qs => qs.Questions)
-                    .ThenInclude(question => question.Options)
                 .Include(qs => qs.QuestionSetTags),
             pageNumber: request.PageNumber,
             pageSize: request.PageSize,

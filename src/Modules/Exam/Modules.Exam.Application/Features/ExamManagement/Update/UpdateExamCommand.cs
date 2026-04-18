@@ -14,5 +14,5 @@ public sealed record UpdateExamCommand(
     DateTimeOffset? ScheduledStartTime,
     DateTimeOffset? ScheduledEndTime) : ICommand<Result<ExamResponse>>, ICacheInvalidatingCommand
 {
-    public string[] CacheKeysToInvalidate => [$"{CacheKeys.Exams}:id:{ExamId}"];
+    public string[] CacheKeysToInvalidate => [$"{CacheKeys.Exams}:all:", $"{CacheKeys.Exams}:id:{ExamId}"];
 }

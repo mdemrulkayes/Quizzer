@@ -1,10 +1,19 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Modules.Quiz.Core.QuestionAggregate;
 using Shared.Core;
+using Shared.Core.Caching;
 
 namespace Modules.Quiz.Application.Question.QuestionOption;
 
-public sealed record DeleteOptionCommand(long QuestionId, long OptionId) : ICommand<Result<bool>>;
+public sealed record DeleteOptionCommand(long QuestionId, long OptionId) : ICommand<Result<bool>>, ICacheInvalidatingCommand
+{
+    public string[] CacheKeysToInvalidate =>
+    [
+        $"{CacheKeys.Questions}:all:",
+        $"{CacheKeys.Questions}:id:{QuestionId}",
+        $"{CacheKeys.QuestionSets}:all:",
+    ];
+}
 
 internal sealed class DeleteOptionCommandHandler(
     IQuestionRepository questionRepository,

@@ -4,10 +4,18 @@ using Modules.Quiz.Application.Tag.Dtos;
 using Modules.Quiz.Core.QuestionAggregate;
 using Modules.Quiz.Core.Tag;
 using Shared.Core;
+using Shared.Core.Caching;
 
 namespace Modules.Quiz.Application.Question.QuestionSetTag;
 
-public sealed record AssignTagToQuestionSetCommand(long QuestionSetId, long TagId) : ICommand<Result<TagResponse>>;
+public sealed record AssignTagToQuestionSetCommand(long QuestionSetId, long TagId) : ICommand<Result<TagResponse>>, ICacheInvalidatingCommand
+{
+    public string[] CacheKeysToInvalidate =>
+    [
+        $"{CacheKeys.QuestionSets}:all:",
+        $"{CacheKeys.QuestionSets}:id:{QuestionSetId}",
+    ];
+}
 
 internal sealed class AssignTagToQuestionSetCommandHandler(
     IQuestionSetRepository questionSetRepository,
