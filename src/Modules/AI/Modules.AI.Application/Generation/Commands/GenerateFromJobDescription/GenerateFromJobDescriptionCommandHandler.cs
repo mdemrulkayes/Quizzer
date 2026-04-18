@@ -82,7 +82,7 @@ internal sealed class GenerateFromJobDescriptionCommandHandler(
         if (!generateResult.IsSuccess)
         {
             await MarkFailed(generationRequest, generateResult.Error.Message, null, cancellationToken);
-            return AIGenerationErrors.GenerationFailed;
+            return generateResult.Error;
         }
 
         var responseJson = generateResult.Value!;
@@ -162,7 +162,7 @@ internal sealed class GenerateFromJobDescriptionCommandHandler(
         if (!generateResult.IsSuccess)
         {
             await MarkFailed(generationRequest, generateResult.Error.Message, null, cancellationToken);
-            return AIGenerationErrors.GenerationFailed;
+            return generateResult.Error;
         }
 
         var responseJson = generateResult.Value!;

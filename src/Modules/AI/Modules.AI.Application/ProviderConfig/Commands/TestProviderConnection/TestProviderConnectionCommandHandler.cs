@@ -1,5 +1,4 @@
 using Modules.AI.Application.Dtos;
-using Modules.AI.Core.Errors;
 using Modules.AI.Core.Providers;
 using Modules.AI.Core.Repositories;
 using Shared.Core;
@@ -43,7 +42,7 @@ internal sealed class TestProviderConnectionCommandHandler(
 
         if (!testResult.IsSuccess)
         {
-            return new TestConnectionResponse(false, AIProviderErrors.ConnectionTestFailed.Message);
+            return new TestConnectionResponse(false, testResult.Error.Message);
         }
 
         return new TestConnectionResponse(true, "Connection successful.");

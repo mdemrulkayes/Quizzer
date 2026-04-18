@@ -19,4 +19,16 @@ public struct AIProviderErrors
     public static readonly Error InvalidApiKey = Error.Validation(
         "AIProvider.InvalidApiKey",
         "The API key cannot be empty.");
+
+    public static Error ApiError(string message) =>
+        Error.Failure("AIProvider.ApiError", message);
+
+    public static Error RateLimitExceeded(string message) =>
+        Error.Failure("AIProvider.RateLimitExceeded", message);
+
+    public static Error AuthenticationFailed(string message) =>
+        Error.Unauthorized("AIProvider.AuthenticationFailed", message);
+
+    public static Error ServerError(string message) =>
+        Error.Unexpected("AIProvider.ServerError", message);
 }

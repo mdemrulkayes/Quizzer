@@ -71,7 +71,7 @@ internal sealed class GenerateQuestionSetCommandHandler(
             generationRequest.ErrorMessage = generateResult.Error.Message;
             generationRequest.CompletedAt = DateTimeOffset.UtcNow;
             await generationRequestRepository.UpdateAsync(generationRequest, cancellationToken);
-            return AIGenerationErrors.GenerationFailed;
+            return generateResult.Error;
         }
 
         var responseJson = generateResult.Value!;

@@ -1,6 +1,8 @@
+using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
+using Modules.AI.Core.Errors;
 using Modules.AI.Core.Providers;
 using Shared.Core;
 
@@ -49,7 +51,7 @@ public class GeminiProvider(IHttpClientFactory httpClientFactory, ILogger<Gemini
             {
                 var errorBody = await response.Content.ReadAsStringAsync(cancellationToken);
                 logger.LogError("Gemini API returned {StatusCode}: {ErrorBody}", response.StatusCode, errorBody);
-                return Error.Failure("AIProvider.ApiError", $"Gemini API returned {(int)response.StatusCode}: {errorBody}");
+                return ParseProviderError(response.StatusCode, errorBody);
             }
 
             var responseJson = await response.Content.ReadFromJsonAsync<JsonElement>(cancellationToken);
@@ -101,5 +103,43 @@ public class GeminiProvider(IHttpClientFactory httpClientFactory, ILogger<Gemini
         }
 
         return true;
+    }
+
+    private static Error ParseProviderError(HttpStatusCode statusCode, string errorBody)
+    {
+        var message = TryExtractErrorMessage(errorBody);
+
+        return (int)statusCode switch
+        {
+            401 => AIProviderErrors.AuthenticationFailed(
+                message ?? "Authentication failed. Please check your API key."),
+            403 => AIProviderErrors.AuthenticationFailed(
+                message ?? "Access denied. Please check your API key permissions."),
+            429 => AIProviderErrors.RateLimitExceeded(
+                message ?? "Rate limit exceeded. Please wait before retrying."),
+            >= 500 => AIProviderErrors.ServerError(
+                message ?? "The Gemini API encountered a server error. Please try again later."),
+            _ => AIProviderErrors.ApiError(
+                message ?? $"Gemini API returned an error (HTTP {(int)statusCode}).")
+        };
+    }
+
+    private static string? TryExtractErrorMessage(string errorBody)
+    {
+        try
+        {
+            var json = JsonDocument.Parse(errorBody);
+            if (json.RootElement.TryGetProperty("error", out var errorObj) &&
+                errorObj.TryGetProperty("message", out var msgProp))
+            {
+                return msgProp.GetString();
+            }
+        }
+        catch
+        {
+            // ignore parse failures — fall through to null
+        }
+
+        return null;
     }
 }
