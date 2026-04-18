@@ -25,6 +25,8 @@ public sealed class GenerateQuestionSetCommandValidator : AbstractValidator<Gene
             .WithMessage("Question count must be between 10 and 50.");
 
         RuleFor(x => x.ExperienceYears)
+            .NotNull()
+            .WithMessage("Experience years is required for professional or expert complexity.")
             .GreaterThan(0)
             .WithMessage("Experience years must be greater than 0 for professional or expert complexity.")
             .When(x => x.Complexity is "professional" or "expert");

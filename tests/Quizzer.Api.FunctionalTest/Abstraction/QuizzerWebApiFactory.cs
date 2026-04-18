@@ -77,15 +77,22 @@ public class QuizzerWebApiFactory : WebApplicationFactory<Program>, IAsyncLifeti
             services.AddDistributedMemoryCache();
 
             // Replace MongoDB-backed AI module services with in-memory mocks
-            var mongoDescriptor = services.FirstOrDefault(s => s.ServiceType == typeof(AIModuleMongoContext));
-            if (mongoDescriptor is not null)
-                services.Remove(mongoDescriptor);
+            var aiDescriptors = services
+                .Where(s => s.ServiceType == typeof(AIModuleMongoContext)
+                    || s.ServiceType == typeof(IAIProviderConfigRepository)
+                    || s.ServiceType == typeof(IAIGenerationRequestRepository)
+                    || s.ServiceType == typeof(IInterviewPrepMaterialRepository)
+                    || s.ServiceType == typeof(IApiKeyEncryptionService)
+                    || s.ServiceType == typeof(IAIProviderFactory))
+                .ToList();
+            foreach (var d in aiDescriptors)
+                services.Remove(d);
 
             services.AddSingleton<IAIProviderConfigRepository, InMemoryAIProviderConfigRepository>();
             services.AddSingleton<IAIGenerationRequestRepository, InMemoryAIGenerationRequestRepository>();
             services.AddSingleton<IInterviewPrepMaterialRepository, InMemoryInterviewPrepMaterialRepository>();
             services.AddSingleton<IApiKeyEncryptionService, MockApiKeyEncryptionService>();
-            services.AddSingleton<IAIProviderFactory, MockAIProviderFactory>();
+            services.AddScoped<IAIProviderFactory, MockAIProviderFactory>();
         });
     }
 

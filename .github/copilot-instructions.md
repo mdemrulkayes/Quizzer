@@ -123,5 +123,14 @@ Tests use `WebApplicationFactory<Program>` with **Testcontainers** (real SQL Ser
 
 Call `AddTokenToEachRequest()` to attach the QuizAuthor token. Tests require Docker to be running.
 
+### Database column constraints
+Always check `HasMaxLength()` in EF entity configurations before using test data or generating values. Key limits:
+- `QuestionSet.Name` — max 50 chars
+- `QuestionSet.SetCode` — max 50 chars
+- `QuestionSet.Details` — max 200 chars
+- `QuestionSet.ExpertiseFields` — max 1000 chars
+
+When generating random codes/identifiers in tests, ensure they fit within the column's `HasMaxLength()` constraint. Never assume a column allows unlimited length — always verify the EF configuration first.
+
 ### Four roles (backend constants in `Modules.Identity`)
 `SuperAdmin`, `SupportAdmin`, `QuizAuthor`, `Examine` (note: "Examine" not "Examinee" in code).

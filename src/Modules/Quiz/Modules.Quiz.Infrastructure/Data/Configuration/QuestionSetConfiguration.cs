@@ -21,7 +21,7 @@ internal sealed class QuestionSetConfiguration : IEntityTypeConfiguration<Questi
             .HasMaxLength(200);
 
         builder.Property(x => x.SetCode)
-            .HasMaxLength(10);
+            .HasMaxLength(50);
 
         builder.Property(x => x.Source)
             .HasConversion<int>()
