@@ -56,7 +56,7 @@ export class ExamListComponent implements OnInit {
 
   readonly exams = signal<ExamResponse[]>([]);
   readonly totalRecords = signal(0);
-  readonly pageSize = signal(10);
+  pageSize = 10;
   readonly loading = signal(true);
   readonly saving = signal(false);
   readonly questionSets = signal<QuestionSetResponse[]>([]);
@@ -82,14 +82,13 @@ export class ExamListComponent implements OnInit {
     this.loadQuestionSets();
   }
 
-  loadExams(pageNumber = 1, pageSize = 10): void {
+  loadExams(pageNumber = 1, pageSize = this.pageSize): void {
     this.loading.set(true);
     this.currentPage = pageNumber;
     this.examService.getExams(pageNumber, pageSize).subscribe({
       next: (result) => {
         this.exams.set(result.items);
         this.totalRecords.set(result.totalCount);
-        this.pageSize.set(result.pageSize);
         this.loading.set(false);
       },
       error: () => {
@@ -103,6 +102,7 @@ export class ExamListComponent implements OnInit {
     const rows = event.rows ?? 10;
     const first = event.first ?? 0;
     const pageNumber = Math.floor(first / rows) + 1;
+    this.pageSize = rows;
     this.loadExams(pageNumber, rows);
   }
 
@@ -166,7 +166,7 @@ export class ExamListComponent implements OnInit {
           this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Exam updated successfully.' });
           this.saving.set(false);
           this.dialogVisible = false;
-          this.loadExams(this.currentPage, this.pageSize());
+          this.loadExams(this.currentPage, this.pageSize);
         },
         error: () => {
           this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to update exam.' });
@@ -189,7 +189,7 @@ export class ExamListComponent implements OnInit {
           this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Exam created successfully.' });
           this.saving.set(false);
           this.dialogVisible = false;
-          this.loadExams(this.currentPage, this.pageSize());
+          this.loadExams(this.currentPage, this.pageSize);
         },
         error: () => {
           this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to create exam.' });
@@ -212,7 +212,7 @@ export class ExamListComponent implements OnInit {
         obs.subscribe({
           next: () => {
             this.messageService.add({ severity: 'success', summary: 'Success', detail: `Exam ${action}ed successfully.` });
-            this.loadExams(this.currentPage, this.pageSize());
+            this.loadExams(this.currentPage, this.pageSize);
           },
           error: () => {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: `Failed to ${action} exam.` });
@@ -231,7 +231,7 @@ export class ExamListComponent implements OnInit {
         this.examService.deleteExam(exam.examId).subscribe({
           next: () => {
             this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Exam deleted successfully.' });
-            this.loadExams(this.currentPage, this.pageSize());
+            this.loadExams(this.currentPage, this.pageSize);
           },
           error: () => {
             this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to delete exam.' });
