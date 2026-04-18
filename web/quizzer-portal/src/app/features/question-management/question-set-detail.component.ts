@@ -23,6 +23,7 @@ import { Tag } from 'primeng/tag';
 import { Panel } from 'primeng/panel';
 import { RadioButton } from 'primeng/radiobutton';
 import { ConfirmDialog } from 'primeng/confirmdialog';
+import { ToggleSwitch } from 'primeng/toggleswitch';
 
 @Component({
   selector: 'app-question-set-detail',
@@ -41,6 +42,7 @@ import { ConfirmDialog } from 'primeng/confirmdialog';
     Panel,
     RadioButton,
     ConfirmDialog,
+    ToggleSwitch,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './question-set-detail.component.html',
@@ -236,6 +238,46 @@ export class QuestionSetDetailComponent implements OnInit {
         });
       },
     });
+  }
+
+  onVisibilityToggle(isPublic: boolean): void {
+    const qs = this.questionSet();
+    if (!qs) return;
+    this.quizService.toggleVisibility(qs.questionSetId, isPublic).subscribe({
+      next: () => {
+        this.questionSet.set({ ...qs, isPublic });
+        this.messageService.add({ severity: 'success', summary: 'Updated', detail: `Question set is now ${isPublic ? 'public' : 'private'}.` });
+      },
+      error: () => {
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to update visibility.' });
+      },
+    });
+  }
+
+  getSourceLabel(source: number): string {
+    switch (source) {
+      case 1: return 'AI Generated';
+      case 2: return 'AI (Job Desc)';
+      default: return 'Manual';
+    }
+  }
+
+  getSourceSeverity(source: number): 'info' | 'success' | 'warn' {
+    switch (source) {
+      case 1: return 'success';
+      case 2: return 'warn';
+      default: return 'info';
+    }
+  }
+
+  getComplexityLabel(complexity: number | null): string {
+    switch (complexity) {
+      case 0: return 'Beginner';
+      case 1: return 'Intermediate';
+      case 2: return 'Professional';
+      case 3: return 'Expert';
+      default: return '';
+    }
   }
 
   truncate(text: string | null, max: number): string {

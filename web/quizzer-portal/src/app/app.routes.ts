@@ -105,6 +105,34 @@ export const routes: Routes = [
         data: { allowedRoles: [UserRole.SuperAdmin, UserRole.SupportAdmin, UserRole.QuizAuthor] },
         loadComponent: () => import('./features/exam-results/exam-results-admin.component').then((m) => m.ExamResultsAdminComponent),
       },
+      // AI routes - available to all authenticated users
+      {
+        path: 'ai/settings',
+        loadComponent: () => import('./features/ai-settings/ai-settings.component').then((m) => m.AISettingsComponent),
+      },
+      {
+        path: 'ai/generate',
+        loadComponent: () => import('./features/ai-generation/generate-wizard/generate-wizard.component').then((m) => m.GenerateWizardComponent),
+      },
+      {
+        path: 'ai/job-description',
+        loadComponent: () => import('./features/ai-generation/job-description/job-description.component').then((m) => m.JobDescriptionComponent),
+      },
+      {
+        path: 'ai/history',
+        canActivate: [authGuard],
+        loadComponent: () => import('./features/ai-generation/generation-history/generation-history.component').then((m) => m.GenerationHistoryComponent),
+      },
+      {
+        path: 'ai/interview-prep',
+        canActivate: [authGuard],
+        loadComponent: () => import('./features/ai-generation/interview-prep-list/interview-prep-list.component').then((m) => m.InterviewPrepListComponent),
+      },
+      {
+        path: 'ai/interview-prep/:id',
+        canActivate: [authGuard],
+        loadComponent: () => import('./features/ai-generation/interview-prep-detail/interview-prep-detail.component').then((m) => m.InterviewPrepDetailComponent),
+      },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
   },

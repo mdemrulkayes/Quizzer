@@ -1,5 +1,6 @@
 using System.Reflection;
 using Elastic.Serilog.Sinks;
+using Modules.AI.Endpoints;
 using Modules.Exam.Endpoints;
 using Modules.Exam.Infrastructure;
 using Modules.Identity;
@@ -45,6 +46,7 @@ try
     builder.Services.RegisterIdentityModule(builder.Configuration, logger, mediatRAssemblies);
     builder.Services.RegisterQuestionModule(builder.Configuration, logger, mediatRAssemblies);
     builder.Services.RegisterExamEndpointsModule(builder.Configuration, logger, mediatRAssemblies);
+    builder.Services.RegisterAIModule(builder.Configuration, logger, mediatRAssemblies);
 
     #endregion
 

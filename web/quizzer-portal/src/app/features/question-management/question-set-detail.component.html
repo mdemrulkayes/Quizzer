@@ -7,13 +7,23 @@
   <p>Loading...</p>
 } @else if (questionSet()) {
   <div class="bg-[var(--p-surface-0)] border border-[var(--p-surface-200)] rounded-[var(--p-border-radius)] p-6 mb-6">
-    <h3 class="mt-0 mb-2 text-[var(--p-text-color)]">{{ questionSet()!.name }}</h3>
+    <div class="flex items-center gap-3 mb-2">
+      <h3 class="mt-0 mb-0 text-[var(--p-text-color)]">{{ questionSet()!.name }}</h3>
+      <p-tag [value]="getSourceLabel(questionSet()!.source)" [severity]="getSourceSeverity(questionSet()!.source)" />
+      @if (questionSet()!.complexity !== null && questionSet()!.complexity !== undefined) {
+        <span class="text-xs font-medium px-2 py-1 rounded bg-[var(--p-surface-100)] text-[var(--p-text-color)]">{{ getComplexityLabel(questionSet()!.complexity) }}</span>
+      }
+    </div>
     @if (questionSet()!.setCode) {
       <p class="my-1 text-[var(--p-text-muted-color)]"><strong>Code:</strong> {{ questionSet()!.setCode }}</p>
     }
     @if (questionSet()!.details) {
       <p class="my-1 text-[var(--p-text-muted-color)]">{{ questionSet()!.details }}</p>
     }
+    <div class="flex items-center gap-2 mt-3">
+      <label class="text-sm font-medium text-[var(--p-text-color)]">{{ questionSet()!.isPublic ? 'Public' : 'Private' }}</label>
+      <p-toggleswitch [ngModel]="questionSet()!.isPublic" (ngModelChange)="onVisibilityToggle($event)" />
+    </div>
   </div>
 
   <!-- Tags Section -->
@@ -61,6 +71,12 @@
                 <p class="my-1"><strong>Details:</strong> {{ q.details }}</p>
               }
               <p class="my-1"><strong>Marks:</strong> {{ q.mark ?? 'N/A' }}</p>
+              @if (q.explanation) {
+                <p class="my-1"><strong>Explanation:</strong> {{ q.explanation }}</p>
+              }
+              @if (q.difficultyScore !== null && q.difficultyScore !== undefined) {
+                <p class="my-1"><strong>Difficulty:</strong> {{ q.difficultyScore }}/10</p>
+              }
             </div>
             <h4 class="mt-2 mb-1 text-[var(--p-text-color)]">Options</h4>
             <div class="flex flex-col gap-2">

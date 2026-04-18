@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Modules.Quiz.Application.Common.Extensions;
 using Modules.Quiz.Application.Question.QuestionSet.Dtos;
+using Modules.Quiz.Core.Enums;
 using Modules.Quiz.Core.QuestionAggregate;
 using Shared.Application;
 using Shared.Core;
@@ -27,6 +28,30 @@ internal sealed class GetAllQuestionSetQueryHandler(IQuestionSetRepository repos
                 qs => qs.QuestionSetTags.Any(qst => qst.TagId == tagId);
 
             filter = filter is null ? tagFilter : CombineExpressions(filter, tagFilter);
+        }
+
+        if (request.Source.HasValue)
+        {
+            var source = request.Source.Value;
+            Expression<Func<Core.QuestionAggregate.QuestionSet, bool>> sourceFilter =
+                qs => qs.Source == source;
+            filter = filter is null ? sourceFilter : CombineExpressions(filter, sourceFilter);
+        }
+
+        if (request.IsPublic.HasValue)
+        {
+            var isPublic = request.IsPublic.Value;
+            Expression<Func<Core.QuestionAggregate.QuestionSet, bool>> visibilityFilter =
+                qs => qs.IsPublic == isPublic;
+            filter = filter is null ? visibilityFilter : CombineExpressions(filter, visibilityFilter);
+        }
+
+        if (request.ComplexityFilter.HasValue)
+        {
+            var complexity = request.ComplexityFilter.Value;
+            Expression<Func<Core.QuestionAggregate.QuestionSet, bool>> complexityFilter =
+                qs => qs.Complexity == complexity;
+            filter = filter is null ? complexityFilter : CombineExpressions(filter, complexityFilter);
         }
 
         var sets = await repository.GetAllAsync(

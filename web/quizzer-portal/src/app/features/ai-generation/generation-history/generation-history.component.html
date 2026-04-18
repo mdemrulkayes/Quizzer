@@ -1,0 +1,57 @@
+<div class="flex justify-between items-center mb-6">
+  <h2 class="m-0 text-[var(--p-text-color)] text-2xl">Generation History</h2>
+</div>
+
+<p-table
+  [value]="history()"
+  [paginator]="true"
+  [rows]="pageSize"
+  [rowsPerPageOptions]="[5, 10, 25]"
+  [loading]="loading()"
+  [rowHover]="true"
+  styleClass="p-datatable-sm"
+  [sortField]="'createdAt'"
+  [sortOrder]="-1"
+>
+  <ng-template #header>
+    <tr>
+      <th pSortableColumn="createdAt">Date <p-sortIcon field="createdAt" /></th>
+      <th>Source</th>
+      <th>Output Type</th>
+      <th>Status</th>
+      <th>Completed At</th>
+      <th>Error</th>
+    </tr>
+  </ng-template>
+  <ng-template #body let-item>
+    <tr>
+      <td>{{ item.createdAt | date:'medium' }}</td>
+      <td>{{ getSourceLabel(item.source) }}</td>
+      <td>{{ getOutputTypeLabel(item.outputType) }}</td>
+      <td>
+        <p-tag [value]="item.status" [severity]="getStatusSeverity(item.status)" />
+      </td>
+      <td>
+        @if (item.completedAt) {
+          {{ item.completedAt | date:'medium' }}
+        } @else {
+          —
+        }
+      </td>
+      <td>
+        @if (item.errorMessage) {
+          <i class="pi pi-exclamation-circle text-red-500 cursor-pointer"
+             [pTooltip]="item.errorMessage"
+             tooltipPosition="left"></i>
+        } @else {
+          —
+        }
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template #emptymessage>
+    <tr>
+      <td colspan="6" class="text-center p-4">No generation history found.</td>
+    </tr>
+  </ng-template>
+</p-table>

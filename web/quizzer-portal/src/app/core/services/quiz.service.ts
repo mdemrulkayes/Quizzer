@@ -89,6 +89,13 @@ export class QuizService {
     return this.http.delete<boolean>(`${this.baseUrl}/questionSet/${setId}`);
   }
 
+  toggleVisibility(setId: number, isPublic: boolean): Observable<QuestionSetResponse> {
+    return this.http.patch<QuestionSetResponse>(
+      `${this.baseUrl}/questionSet/${setId}/visibility`,
+      { questionSetId: setId, isPublic }
+    );
+  }
+
   // Question Set Tags
   getQuestionSetTags(setId: number): Observable<TagResponse[]> {
     return this.http.get<TagResponse[]>(`${this.baseUrl}/questionSet/${setId}/tags`);

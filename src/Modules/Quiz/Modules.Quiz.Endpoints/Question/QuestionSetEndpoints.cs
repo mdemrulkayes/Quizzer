@@ -48,6 +48,12 @@ internal class QuestionSetEndpoints : IBaseEndpoint
             .ProducesValidationProblem()
             .WithTags(QuestionModuleConstants.RouteTag.QuestionSetTag)
             .RequireAuthorization(AuthorizationPolicyConstants.QuizAuthorPolicy);
+
+        routeBuilder.MapPatch(QuestionModuleConstants.Route.QuestionSetRoute.ToggleVisibility, ToggleVisibility)
+            .Produces((int)HttpStatusCode.OK, typeof(QuestionSetResponse))
+            .ProducesValidationProblem()
+            .WithTags(QuestionModuleConstants.RouteTag.QuestionSetTag)
+            .RequireAuthorization(AuthorizationPolicyConstants.AuthenticatedPolicy);
     }
 
     private async Task<IResult> GetAllQuestionSets(ISender sender, [AsParameters] GetAllQuestionSetQuery query)
@@ -84,5 +90,15 @@ internal class QuestionSetEndpoints : IBaseEndpoint
         var deleteSet = await sender.Send(new DeleteQuestionSetCommand(setId));
 
         return deleteSet.ConvertToResult();
+    }
+
+    private static async Task<IResult> ToggleVisibility(ISender sender, long setId, ToggleVisibilityCommand command)
+    {
+        if (setId != command.QuestionSetId)
+        {
+            return Results.BadRequest("Invalid request");
+        }
+        var result = await sender.Send(command);
+        return result.ConvertToResult();
     }
 }

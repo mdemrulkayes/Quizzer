@@ -35,6 +35,6 @@ internal sealed class UpdateOptionCommandHandler(
         questionRepository.Update(question);
         await unitOfWork.CommitAsync(cancellationToken);
 
-        return new QuestionOptionResponse(option.QuestionOptionId, option.OptionText, option.IsAnswer);
+        return new QuestionOptionResponse(option.QuestionOptionId, option.OptionText, option.IsAnswer, option.OptionIdentifier);
     }
 }

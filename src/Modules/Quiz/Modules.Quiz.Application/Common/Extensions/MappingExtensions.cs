@@ -13,13 +13,17 @@ internal static class MappingExtensions
         new(tag.TagId, tag.Name, tag.Description);
 
     public static QuestionOptionResponse ToResponse(this Core.QuestionAggregate.QuestionOption option) =>
-        new(option.QuestionOptionId, option.OptionText, option.IsAnswer);
+        new(option.QuestionOptionId, option.OptionText, option.IsAnswer, option.OptionIdentifier);
 
     public static QuestionResponse ToResponse(this QuestionEntity question) =>
         new(question.QuestionId,
             question.AskedQuestion,
             question.Discussion,
             question.QuestionMark,
+            question.QuestionType,
+            question.Explanation,
+            question.DifficultyScore,
+            question.Sequence,
             question.Options.Select(o => o.ToResponse()).ToList());
 
     public static QuestionSetResponse ToResponse(this Core.QuestionAggregate.QuestionSet set) =>
@@ -27,6 +31,11 @@ internal static class MappingExtensions
             set.Name,
             set.SetCode,
             set.Details,
+            set.Source,
+            set.IsPublic,
+            set.Complexity,
+            set.ExperienceYears,
+            set.ExpertiseFields,
             set.Questions.Select(q => q.ToResponse()).ToList());
 
     public static PagedListDto<TDto> ToPagedListDto<TEntity, TDto>(

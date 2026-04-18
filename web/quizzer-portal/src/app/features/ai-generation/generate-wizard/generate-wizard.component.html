@@ -1,0 +1,230 @@
+<div class="mb-6">
+  <h2 class="m-0 mb-2 text-[1.75rem] text-[var(--p-text-color)]">Generate Question Set</h2>
+  <p class="m-0 text-[var(--p-text-muted-color)]">Use AI to generate a question set based on topics and complexity.</p>
+</div>
+
+@if (checkingProvider()) {
+  <div class="flex items-center justify-center py-12">
+    <p-progressSpinner strokeWidth="4" [style]="{ width: '48px', height: '48px' }" />
+  </div>
+} @else if (hasProvider() === false) {
+  <p-message severity="warn" styleClass="mb-6 w-full">
+    <span class="flex items-center gap-2">
+      <i class="pi pi-exclamation-triangle"></i>
+      You need to configure an AI provider before generating content.
+      <a routerLink="/ai/settings" class="font-semibold underline text-[var(--p-primary-color)]">Go to AI Settings</a>
+    </span>
+  </p-message>
+} @else if (result()) {
+  <p-card>
+    <div class="flex flex-col items-center gap-4 py-6">
+      <i class="pi pi-check-circle text-5xl text-green-500"></i>
+      <h3 class="m-0 text-xl font-semibold text-[var(--p-text-color)]">Question Set Generated!</h3>
+      <p class="m-0 text-[var(--p-text-muted-color)]">
+        <strong>{{ result()!.title }}</strong> — {{ result()!.questionCount }} questions
+      </p>
+      <div class="flex gap-3 mt-2">
+        <p-button label="View Question Sets" icon="pi pi-list" routerLink="/question-sets" />
+        <p-button label="Generate Another" icon="pi pi-refresh" severity="secondary" (click)="result.set(null); currentStep.set(0)" />
+      </div>
+    </div>
+  </p-card>
+} @else {
+  <!-- Loading overlay -->
+  @if (generating()) {
+    <div class="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+      <p-card styleClass="text-center">
+        <div class="flex flex-col items-center gap-4 p-4">
+          <p-progressSpinner strokeWidth="4" [style]="{ width: '56px', height: '56px' }" />
+          <p class="m-0 text-lg font-medium text-[var(--p-text-color)]">Generating your question set...</p>
+          <p class="m-0 text-sm text-[var(--p-text-muted-color)]">This may take a few seconds.</p>
+        </div>
+      </p-card>
+    </div>
+  }
+
+  <p-card>
+    <!-- Step indicator -->
+    <div class="flex items-center justify-center gap-2 mb-6 flex-wrap">
+      @for (step of steps(); track step.label; let i = $index) {
+        <div
+          class="flex items-center gap-2 cursor-pointer px-3 py-2 rounded-lg transition-colors"
+          [class]="i === currentStep()
+            ? 'bg-[var(--p-primary-color)] text-[var(--p-primary-contrast-color)]'
+            : i < currentStep()
+              ? 'bg-[var(--p-surface-100)] text-[var(--p-primary-color)]'
+              : 'bg-[var(--p-surface-50)] text-[var(--p-text-muted-color)]'"
+          (click)="goToStep(i)"
+        >
+          <i [class]="step.icon + ' text-sm'"></i>
+          <span class="text-sm font-medium">{{ step.label }}</span>
+        </div>
+        @if (i < steps().length - 1) {
+          <i class="pi pi-chevron-right text-xs text-[var(--p-text-muted-color)]"></i>
+        }
+      }
+    </div>
+
+    <!-- Step 1: Topics -->
+    @if (currentStepName() === 'topics') {
+      <div class="flex flex-col gap-4 py-4">
+        <h3 class="m-0 text-lg font-semibold text-[var(--p-text-color)]">Select Topics</h3>
+        <p class="m-0 text-sm text-[var(--p-text-muted-color)]">Add one or more topics for the question set.</p>
+        <div class="flex gap-2">
+          <input
+            pInputText
+            [(ngModel)]="newTopic"
+            placeholder="Enter a topic..."
+            class="flex-1"
+            (keydown.enter)="addTopic()"
+          />
+          <p-button icon="pi pi-plus" label="Add" [disabled]="!newTopic.trim()" (click)="addTopic()" />
+        </div>
+        <div class="flex flex-wrap gap-2">
+          @for (topic of topics(); track topic) {
+            <p-chip [label]="topic" [removable]="true" (onRemove)="removeTopic(topic)" />
+          }
+        </div>
+        @if (topics().length === 0) {
+          <p class="m-0 text-sm text-orange-500">At least one topic is required.</p>
+        }
+        <div class="flex justify-end mt-4">
+          <p-button
+            label="Next"
+            icon="pi pi-arrow-right"
+            iconPos="right"
+            [disabled]="topics().length === 0"
+            (click)="nextStep()"
+          />
+        </div>
+      </div>
+    }
+
+    <!-- Step 2: Complexity -->
+    @if (currentStepName() === 'complexity') {
+      <div class="flex flex-col gap-4 py-4">
+        <h3 class="m-0 text-lg font-semibold text-[var(--p-text-color)]">Choose Complexity</h3>
+        <p class="m-0 text-sm text-[var(--p-text-muted-color)]">Select the difficulty level for the questions.</p>
+        <div class="flex flex-col gap-3">
+          @for (opt of complexityOptions; track opt.value) {
+            <div class="flex items-center gap-2">
+              <p-radioButton
+                [name]="'complexity'"
+                [value]="opt.value"
+                [(ngModel)]="complexity"
+                [inputId]="'complexity-' + opt.value"
+              />
+              <label [for]="'complexity-' + opt.value" class="text-[var(--p-text-color)] cursor-pointer">
+                {{ opt.label }}
+              </label>
+            </div>
+          }
+        </div>
+        <div class="flex justify-between mt-4">
+          <p-button label="Back" icon="pi pi-arrow-left" severity="secondary" (click)="prevStep()" />
+          <p-button label="Next" icon="pi pi-arrow-right" iconPos="right" (click)="nextStep()" />
+        </div>
+      </div>
+    }
+
+    <!-- Step 3: Experience (conditional) -->
+    @if (currentStepName() === 'experience') {
+      <div class="flex flex-col gap-4 py-4">
+        <h3 class="m-0 text-lg font-semibold text-[var(--p-text-color)]">Experience Details</h3>
+        <p class="m-0 text-sm text-[var(--p-text-muted-color)]">Provide experience details for more targeted questions.</p>
+        <div class="flex flex-col gap-2">
+          <label class="font-medium text-[var(--p-text-color)]">Years of Experience</label>
+          <p-inputNumber [(ngModel)]="experienceYears" [min]="0" [max]="50" [showButtons]="true" />
+        </div>
+        <div class="flex flex-col gap-2">
+          <label class="font-medium text-[var(--p-text-color)]">Expertise Fields</label>
+          <input
+            pInputText
+            [(ngModel)]="expertiseFieldsText"
+            placeholder="e.g. Cloud Architecture, Microservices, DevOps"
+          />
+          <span class="text-xs text-[var(--p-text-muted-color)]">Comma-separated list of expertise areas.</span>
+        </div>
+        <div class="flex justify-between mt-4">
+          <p-button label="Back" icon="pi pi-arrow-left" severity="secondary" (click)="prevStep()" />
+          <p-button label="Next" icon="pi pi-arrow-right" iconPos="right" (click)="nextStep()" />
+        </div>
+      </div>
+    }
+
+    <!-- Step: Question Count -->
+    @if (currentStepName() === 'questions') {
+      <div class="flex flex-col gap-4 py-4">
+        <h3 class="m-0 text-lg font-semibold text-[var(--p-text-color)]">Number of Questions</h3>
+        <p class="m-0 text-sm text-[var(--p-text-muted-color)]">Choose how many questions to generate (10-50).</p>
+        <div class="flex flex-col gap-3">
+          <p-slider [(ngModel)]="questionCount" [min]="10" [max]="50" [step]="1" />
+          <div class="flex items-center gap-3">
+            <p-inputNumber
+              [(ngModel)]="questionCount"
+              [min]="10"
+              [max]="50"
+              [showButtons]="true"
+              [style]="{ width: '140px' }"
+            />
+            <span class="text-[var(--p-text-muted-color)]">questions</span>
+          </div>
+        </div>
+        <div class="flex justify-between mt-4">
+          <p-button label="Back" icon="pi pi-arrow-left" severity="secondary" (click)="prevStep()" />
+          <p-button label="Next" icon="pi pi-arrow-right" iconPos="right" (click)="nextStep()" />
+        </div>
+      </div>
+    }
+
+    <!-- Step: Review & Confirm -->
+    @if (currentStepName() === 'review') {
+      <div class="flex flex-col gap-4 py-4">
+        <h3 class="m-0 text-lg font-semibold text-[var(--p-text-color)]">Review & Generate</h3>
+        <p class="m-0 text-sm text-[var(--p-text-muted-color)]">Review your selections before generating.</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-[var(--p-surface-50)] rounded-lg p-4">
+          <div>
+            <span class="text-sm font-medium text-[var(--p-text-muted-color)]">Topics</span>
+            <div class="flex flex-wrap gap-1 mt-1">
+              @for (topic of topics(); track topic) {
+                <p-chip [label]="topic" />
+              }
+            </div>
+          </div>
+          <div>
+            <span class="text-sm font-medium text-[var(--p-text-muted-color)]">Complexity</span>
+            <p class="m-0 mt-1 font-semibold text-[var(--p-text-color)] capitalize">{{ complexity() }}</p>
+          </div>
+          @if (showExperienceStep()) {
+            <div>
+              <span class="text-sm font-medium text-[var(--p-text-muted-color)]">Years of Experience</span>
+              <p class="m-0 mt-1 font-semibold text-[var(--p-text-color)]">{{ experienceYears() }}</p>
+            </div>
+            @if (expertiseFieldsText()) {
+              <div>
+                <span class="text-sm font-medium text-[var(--p-text-muted-color)]">Expertise Fields</span>
+                <p class="m-0 mt-1 font-semibold text-[var(--p-text-color)]">{{ expertiseFieldsText() }}</p>
+              </div>
+            }
+          }
+          <div>
+            <span class="text-sm font-medium text-[var(--p-text-muted-color)]">Question Count</span>
+            <p class="m-0 mt-1 font-semibold text-[var(--p-text-color)]">{{ questionCount() }}</p>
+          </div>
+        </div>
+
+        <div class="flex justify-between mt-4">
+          <p-button label="Back" icon="pi pi-arrow-left" severity="secondary" (click)="prevStep()" />
+          <p-button
+            label="Generate"
+            icon="pi pi-sparkles"
+            [disabled]="!canGenerate()"
+            [loading]="generating()"
+            (click)="generate()"
+          />
+        </div>
+      </div>
+    }
+  </p-card>
+}

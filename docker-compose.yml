@@ -13,6 +13,7 @@ services:
       ConnectionStrings__QuestionModuleDbContext: "Server=quizzer-db;database=Quizzer;User Id=sa;Password=Pass@word;Encrypt=false"
       ConnectionStrings__ExamModuleDbContext: "Server=quizzer-db;database=Quizzer;User Id=sa;Password=Pass@word;Encrypt=false"
       ConnectionStrings__Redis: "quizzer-redis:6379"
+      ConnectionStrings__AIModuleMongoDb: "mongodb://admin:Pass@word@quizzer-mongo:27017/QuizzerAI?authSource=admin"
       JwtConfiguration__JwtKey: "d730897473419d1e76189efe498ecd397e812be39fde2a68f9c6a245cf9f9ab5"
       DefaultUser__password: "${DEFAULT_USER_PASSWORD:-ChangeMe@123}"
     ports:
@@ -21,6 +22,7 @@ services:
     depends_on:
        - quizzer.db
        - quizzer.redis
+       - quizzer.mongo
 
   quizzer.db:
     container_name: quizzer-db
@@ -41,9 +43,21 @@ services:
     volumes:
       - redisvolume:/data
 
+  quizzer.mongo:
+    container_name: quizzer-mongo
+    image: mongo:7.0
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=Pass@word
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongovolume:/data/db
+
 volumes:
    sqlvolume:
    redisvolume:
+   mongovolume:
 
 
 

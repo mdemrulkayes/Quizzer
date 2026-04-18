@@ -25,6 +25,7 @@ public struct QuestionModuleConstants
             public const string GetQuestionSetTags = "/api/question/questionSet/{setId}/tags";
             public const string AssignTagToQuestionSet = "/api/question/questionSet/{setId}/tags";
             public const string RemoveTagFromQuestionSet = "/api/question/questionSet/{setId}/tags/{tagId}";
+            public const string ToggleVisibility = "/api/question/questionSet/{setId}/visibility";
         }
 
         public struct QuestionRoute

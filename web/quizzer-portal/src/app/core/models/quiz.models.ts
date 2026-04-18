@@ -3,6 +3,10 @@ export interface QuestionResponse {
   question: string;
   details: string;
   mark: number | null;
+  questionType: number;
+  explanation: string | null;
+  difficultyScore: number | null;
+  sequence: number | null;
   questionOptions: QuestionOptionResponse[];
 }
 
@@ -10,6 +14,7 @@ export interface QuestionOptionResponse {
   questionOptionId: number;
   optionText: string;
   isCorrect: boolean;
+  optionIdentifier: string | null;
 }
 
 export interface QuestionSetResponse {
@@ -17,6 +22,11 @@ export interface QuestionSetResponse {
   name: string;
   setCode: string | null;
   details: string | null;
+  source: number;
+  isPublic: boolean;
+  complexity: number | null;
+  experienceYears: number | null;
+  expertiseFields: string | null;
   questions: QuestionResponse[];
 }
 

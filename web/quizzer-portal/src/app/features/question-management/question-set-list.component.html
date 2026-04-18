@@ -41,8 +41,11 @@
   <ng-template #header>
     <tr>
       <th>Name</th>
+      <th>Source</th>
       <th>Set Code</th>
       <th>Details</th>
+      <th>Complexity</th>
+      <th>Visibility</th>
       <th>Questions</th>
       <th style="width: 12rem">Actions</th>
     </tr>
@@ -50,8 +53,19 @@
   <ng-template #body let-qs>
     <tr>
       <td>{{ qs.name }}</td>
+      <td><p-tag [value]="getSourceLabel(qs.source)" [severity]="getSourceSeverity(qs.source)" /></td>
       <td>{{ qs.setCode ?? '—' }}</td>
       <td>{{ truncate(qs.details, 60) }}</td>
+      <td>
+        @if (qs.complexity !== null && qs.complexity !== undefined) {
+          <span class="text-xs font-medium px-2 py-1 rounded bg-[var(--p-surface-100)] text-[var(--p-text-color)]">{{ getComplexityLabel(qs.complexity) }}</span>
+        } @else {
+          —
+        }
+      </td>
+      <td>
+        <p-toggleswitch [ngModel]="qs.isPublic" (ngModelChange)="onVisibilityToggle(qs, $event)" />
+      </td>
       <td>{{ qs.questions?.length ?? 0 }}</td>
       <td>
         <p-button icon="pi pi-eye" [text]="true" [rounded]="true" severity="info" (onClick)="viewSet(qs)" />
@@ -62,7 +76,7 @@
   </ng-template>
   <ng-template #emptymessage>
     <tr>
-      <td colspan="5" class="text-center p-4">No question sets found.</td>
+      <td colspan="8" class="text-center p-4">No question sets found.</td>
     </tr>
   </ng-template>
 </p-table>

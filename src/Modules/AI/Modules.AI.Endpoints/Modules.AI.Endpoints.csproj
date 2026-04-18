@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Identity\Modules.Identity\Modules.Identity.csproj" />
+    <ProjectReference Include="..\Modules.AI.Application\Modules.AI.Application.csproj" />
+    <ProjectReference Include="..\Modules.AI.Infrastructure\Modules.AI.Infrastructure.csproj" />
+  </ItemGroup>
+</Project>

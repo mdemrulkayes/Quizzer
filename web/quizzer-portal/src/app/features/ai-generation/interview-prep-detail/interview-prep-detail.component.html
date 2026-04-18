@@ -1,0 +1,93 @@
+@if (loading()) {
+  <div class="flex justify-center items-center py-12">
+    <p-progressSpinner strokeWidth="4" />
+  </div>
+} @else if (material(); as m) {
+  <!-- Header -->
+  <div class="flex justify-between items-start mb-6">
+    <div>
+      <h2 class="m-0 text-[var(--p-text-color)] text-2xl">{{ m.jobTitle }}</h2>
+      <p class="mt-1 text-[var(--p-text-muted-color)]">Created {{ m.createdAt | date:'mediumDate' }}</p>
+    </div>
+    <a routerLink="/ai/interview-prep">
+      <p-button label="Back to List" icon="pi pi-arrow-left" severity="secondary" [text]="true" />
+    </a>
+  </div>
+
+  <!-- Key Topics -->
+  <section class="mb-6">
+    <h3 class="text-lg font-semibold text-[var(--p-text-color)] mb-3">Key Topics</h3>
+    <div class="flex flex-wrap gap-2">
+      @for (topic of m.keyTopics; track topic) {
+        <p-tag [value]="topic" severity="info" />
+      }
+    </div>
+  </section>
+
+  <!-- Reading Materials -->
+  @if (m.readingMaterials.length) {
+    <section class="mb-6">
+      <h3 class="text-lg font-semibold text-[var(--p-text-color)] mb-3">Reading Materials</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        @for (rm of m.readingMaterials; track rm.title) {
+          <p-card>
+            <div class="flex flex-col gap-2">
+              <div class="flex items-center gap-2">
+                <span class="font-medium text-[var(--p-text-color)]">{{ rm.title }}</span>
+                <p-tag [value]="rm.type" severity="secondary" />
+              </div>
+              <p class="text-sm text-[var(--p-text-muted-color)] m-0">{{ rm.description }}</p>
+              @if (rm.url) {
+                <a [href]="rm.url" target="_blank" rel="noopener noreferrer"
+                   class="text-[var(--p-primary-color)] text-sm hover:underline">
+                  <i class="pi pi-external-link mr-1"></i>Open Resource
+                </a>
+              }
+            </div>
+          </p-card>
+        }
+      </div>
+    </section>
+  }
+
+  <!-- Practice Questions -->
+  @if (m.practiceQuestions.length) {
+    <section class="mb-6">
+      <h3 class="text-lg font-semibold text-[var(--p-text-color)] mb-3">Practice Questions</h3>
+      <p-accordion [multiple]="true">
+        @for (pq of m.practiceQuestions; track pq.question; let i = $index) {
+          <p-accordionpanel>
+            <p-accordionheader>
+              <span class="font-medium">{{ i + 1 }}. {{ pq.question }}</span>
+            </p-accordionheader>
+            <p-accordioncontent>
+              <div class="p-3">
+                <p class="text-sm text-[var(--p-text-muted-color)] m-0">
+                  <i class="pi pi-lightbulb mr-2 text-yellow-500"></i>
+                  <strong>Hint:</strong> {{ pq.hint }}
+                </p>
+              </div>
+            </p-accordioncontent>
+          </p-accordionpanel>
+        }
+      </p-accordion>
+    </section>
+  }
+
+  <!-- Preparation Tips -->
+  @if (m.preparationTips.length) {
+    <section class="mb-6">
+      <h3 class="text-lg font-semibold text-[var(--p-text-color)] mb-3">Preparation Tips</h3>
+      <ol class="list-decimal pl-5 flex flex-col gap-2">
+        @for (tip of m.preparationTips; track tip) {
+          <li class="text-[var(--p-text-color)]">{{ tip }}</li>
+        }
+      </ol>
+    </section>
+  }
+} @else {
+  <div class="text-center py-12 text-[var(--p-text-muted-color)]">
+    <i class="pi pi-exclamation-circle text-4xl mb-3"></i>
+    <p>Interview prep material not found.</p>
+  </div>
+}

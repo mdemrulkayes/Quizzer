@@ -26,6 +26,11 @@ export class SidebarComponent {
     { label: 'Exams', icon: 'pi pi-file-edit', routerLink: ['/exams'], visible: false, id: 'author' },
     { label: 'Available Exams', icon: 'pi pi-play-circle', routerLink: ['/available-exams'], visible: false, id: 'examinee' },
     { label: 'My Results', icon: 'pi pi-chart-bar', routerLink: ['/my-results'], visible: false, id: 'examinee' },
+    { label: 'AI Settings', icon: 'pi pi-cog', routerLink: ['/ai/settings'], visible: true },
+    { label: 'Generate Quiz', icon: 'pi pi-sparkles', routerLink: ['/ai/generate'], visible: true },
+    { label: 'Job Description', icon: 'pi pi-briefcase', routerLink: ['/ai/job-description'], visible: true },
+    { label: 'Generation History', icon: 'pi pi-history', routerLink: ['/ai/history'], visible: true },
+    { label: 'Interview Prep', icon: 'pi pi-graduation-cap', routerLink: ['/ai/interview-prep'], visible: true },
   ];
 
   readonly filteredMenuItems = computed(() => {

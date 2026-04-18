@@ -14,6 +14,8 @@ import { Toolbar } from 'primeng/toolbar';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { IconField } from 'primeng/iconfield';
 import { InputIcon } from 'primeng/inputicon';
+import { Tag } from 'primeng/tag';
+import { ToggleSwitch } from 'primeng/toggleswitch';
 
 @Component({
   selector: 'app-question-set-list',
@@ -31,6 +33,8 @@ import { InputIcon } from 'primeng/inputicon';
     ConfirmDialog,
     IconField,
     InputIcon,
+    Tag,
+    ToggleSwitch,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './question-set-list.component.html',
@@ -165,6 +169,44 @@ export class QuestionSetListComponent implements OnInit {
         });
       },
     });
+  }
+
+  onVisibilityToggle(qs: QuestionSetResponse, isPublic: boolean): void {
+    this.quizService.toggleVisibility(qs.questionSetId, isPublic).subscribe({
+      next: () => {
+        qs.isPublic = isPublic;
+        this.messageService.add({ severity: 'success', summary: 'Updated', detail: `Question set is now ${isPublic ? 'public' : 'private'}.` });
+      },
+      error: () => {
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to update visibility.' });
+      },
+    });
+  }
+
+  getSourceLabel(source: number): string {
+    switch (source) {
+      case 1: return 'AI Generated';
+      case 2: return 'AI (Job Desc)';
+      default: return 'Manual';
+    }
+  }
+
+  getSourceSeverity(source: number): 'info' | 'success' | 'warn' {
+    switch (source) {
+      case 1: return 'success';
+      case 2: return 'warn';
+      default: return 'info';
+    }
+  }
+
+  getComplexityLabel(complexity: number | null): string {
+    switch (complexity) {
+      case 0: return 'Beginner';
+      case 1: return 'Intermediate';
+      case 2: return 'Professional';
+      case 3: return 'Expert';
+      default: return '';
+    }
   }
 
   truncate(text: string | null, max: number): string {

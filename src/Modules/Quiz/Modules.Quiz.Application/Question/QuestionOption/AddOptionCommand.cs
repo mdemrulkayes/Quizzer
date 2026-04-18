@@ -32,6 +32,6 @@ internal sealed class AddOptionCommandHandler(
         await unitOfWork.CommitAsync(cancellationToken);
 
         var addedOption = question.Options.Last();
-        return new QuestionOptionResponse(addedOption.QuestionOptionId, addedOption.OptionText, addedOption.IsAnswer);
+        return new QuestionOptionResponse(addedOption.QuestionOptionId, addedOption.OptionText, addedOption.IsAnswer, addedOption.OptionIdentifier);
     }
 }

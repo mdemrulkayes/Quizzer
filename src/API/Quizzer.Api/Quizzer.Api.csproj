@@ -25,5 +25,6 @@
     <ProjectReference Include="..\..\Modules\Identity\Modules.Identity\Modules.Identity.csproj" />
     <ProjectReference Include="..\..\Modules\Quiz\Modules.Quiz.Endpoints\Modules.Quiz.Endpoints.csproj" />
     <ProjectReference Include="..\..\Modules\Exam\Modules.Exam.Endpoints\Modules.Exam.Endpoints.csproj" />
+    <ProjectReference Include="..\..\Modules\AI\Modules.AI.Endpoints\Modules.AI.Endpoints.csproj" />
   </ItemGroup>
 </Project>

@@ -3,9 +3,14 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Modules.AI.Core.Providers;
+using Modules.AI.Core.Repositories;
+using Modules.AI.Core.Security;
+using Modules.AI.Infrastructure.Data;
 using Modules.Exam.Infrastructure.Persistence;
 using Modules.Identity.Persistence;
 using Modules.Quiz.Infrastructure.Data;
+using Quizzer.Api.FunctionalTest.Mocks;
 using Shared.Core.Caching;
 using StackExchange.Redis;
 using Testcontainers.MsSql;
@@ -70,6 +75,17 @@ public class QuizzerWebApiFactory : WebApplicationFactory<Program>, IAsyncLifeti
 
             services.AddSingleton<ICacheService, NoOpCacheService>();
             services.AddDistributedMemoryCache();
+
+            // Replace MongoDB-backed AI module services with in-memory mocks
+            var mongoDescriptor = services.FirstOrDefault(s => s.ServiceType == typeof(AIModuleMongoContext));
+            if (mongoDescriptor is not null)
+                services.Remove(mongoDescriptor);
+
+            services.AddSingleton<IAIProviderConfigRepository, InMemoryAIProviderConfigRepository>();
+            services.AddSingleton<IAIGenerationRequestRepository, InMemoryAIGenerationRequestRepository>();
+            services.AddSingleton<IInterviewPrepMaterialRepository, InMemoryInterviewPrepMaterialRepository>();
+            services.AddSingleton<IApiKeyEncryptionService, MockApiKeyEncryptionService>();
+            services.AddSingleton<IAIProviderFactory, MockAIProviderFactory>();
         });
     }
 
