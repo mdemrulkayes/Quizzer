@@ -2,7 +2,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Modules.Exam.Application.Features.ExamManagement.Dtos;
 using Modules.Exam.Application.Features.ExamResults.Dtos;
-using Modules.Exam.Application.Services;
 using Modules.Exam.Core.Enums;
 using Modules.Exam.Core.ExamAggregate;
 using Modules.Exam.Infrastructure.Persistence;

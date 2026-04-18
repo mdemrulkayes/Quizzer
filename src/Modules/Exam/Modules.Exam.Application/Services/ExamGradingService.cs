@@ -1,5 +1,4 @@
 ﻿using Modules.Exam.Core.ExamAggregate;
-using Modules.Exam.Core.Services;
 using Shared.Core.ModuleServices;
 
 namespace Modules.Exam.Application.Services;

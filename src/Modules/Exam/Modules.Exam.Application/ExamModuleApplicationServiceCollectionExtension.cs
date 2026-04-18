@@ -2,7 +2,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Modules.Exam.Application.Features.IntegrationEventHandlers;
 using Modules.Exam.Application.Services;
-using Modules.Exam.Core.Services;
 using Shared.Core.IntegrationEvents;
 using Shared.Core.IntegrationEvents.Events;
 

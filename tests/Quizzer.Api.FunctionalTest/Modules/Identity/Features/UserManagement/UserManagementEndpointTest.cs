@@ -4,7 +4,6 @@ using System.Net.Http.Json;
 using FluentAssertions;
 using Modules.Identity.Constants;
 using Modules.Identity.Features.Login;
-using Modules.Identity.Features.Registration;
 using Quizzer.Api.FunctionalTest.Abstraction;
 
 namespace Quizzer.Api.FunctionalTest.Modules.Identity.Features.UserManagement;

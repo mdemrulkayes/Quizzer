@@ -4,7 +4,6 @@ using Modules.Quiz.Application.Question.QuestionSet.Create;
 using Modules.Quiz.Application.Question.QuestionSet.Dtos;
 using Modules.Quiz.Application.Question.QuestionSet.Update;
 using Modules.Quiz.Core;
-using Modules.Quiz.Core.Enums;
 using Quizzer.Api.FunctionalTest.Abstraction;
 using System.Net;
 using System.Net.Http.Json;
@@ -136,6 +135,7 @@ public class QuestionSetVisibilityEndpointTest : QuizzerBaseFunctionTest
         var createCmd = new CreateQuestionSetCommand("Visibility Test Set", setCode, "Test description", questionCommands);
         var response = await HttpClient.PostAsJsonAsync(
             QuestionModuleConstants.Route.QuestionSetRoute.CreateQuestionSet, createCmd);
+        _testOutputHelper.WriteLine("CreateTestQuestionSet Response: {0}", await response.Content.ReadAsStringAsync());
         response.EnsureSuccessStatusCode();
         return (await response.Content.ReadFromJsonAsync<QuestionSetResponse>())!;
     }

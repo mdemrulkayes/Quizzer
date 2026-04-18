@@ -2,12 +2,12 @@
 using Microsoft.EntityFrameworkCore;
 using Modules.Quiz.Application.Common.Extensions;
 using Modules.Quiz.Application.Question.QuestionSet.Dtos;
-using Modules.Quiz.Core.Enums;
 using Modules.Quiz.Core.QuestionAggregate;
 using Shared.Application;
 using Shared.Core;
 
 namespace Modules.Quiz.Application.Question.QuestionSet.Query;
+
 internal sealed class GetAllQuestionSetQueryHandler(IQuestionSetRepository repository)
     : IQueryHandler<GetAllQuestionSetQuery, Result<PagedListDto<QuestionSetResponse>>>
 {
