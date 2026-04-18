@@ -26,6 +26,10 @@ COPY ["src/Modules/Exam/Modules.Exam.Endpoints/Modules.Exam.Endpoints.csproj", "
 COPY ["src/Modules/Exam/Modules.Exam.Application/Modules.Exam.Application.csproj", "src/Modules/Exam/Modules.Exam.Application/"]
 COPY ["src/Modules/Exam/Modules.Exam.Core/Modules.Exam.Core.csproj", "src/Modules/Exam/Modules.Exam.Core/"]
 COPY ["src/Modules/Exam/Modules.Exam.Infrastructure/Modules.Exam.Infrastructure.csproj", "src/Modules/Exam/Modules.Exam.Infrastructure/"]
+COPY ["src/Modules/AI/Modules.AI.Endpoints/Modules.AI.Endpoints.csproj", "src/Modules/AI/Modules.AI.Endpoints/"]
+COPY ["src/Modules/AI/Modules.AI.Application/Modules.AI.Application.csproj", "src/Modules/AI/Modules.AI.Application/"]
+COPY ["src/Modules/AI/Modules.AI.Core/Modules.AI.Core.csproj", "src/Modules/AI/Modules.AI.Core/"]
+COPY ["src/Modules/AI/Modules.AI.Infrastructure/Modules.AI.Infrastructure.csproj", "src/Modules/AI/Modules.AI.Infrastructure/"]
 RUN dotnet restore "./src/API/Quizzer.Api/Quizzer.Api.csproj"
 COPY . .
 WORKDIR "/src/src/API/Quizzer.Api"
