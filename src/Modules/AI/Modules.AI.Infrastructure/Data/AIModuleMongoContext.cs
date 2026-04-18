@@ -1,4 +1,7 @@
 using Modules.AI.Core.Models;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 
 namespace Modules.AI.Infrastructure.Data;
@@ -6,6 +9,11 @@ namespace Modules.AI.Infrastructure.Data;
 public class AIModuleMongoContext
 {
     private readonly IMongoDatabase _database;
+
+    static AIModuleMongoContext()
+    {
+        BsonSerializer.TryRegisterSerializer(new GuidSerializer(GuidRepresentation.Standard));
+    }
 
     public AIModuleMongoContext(string connectionString, string databaseName)
     {
